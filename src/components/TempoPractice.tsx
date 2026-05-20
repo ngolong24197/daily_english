@@ -38,7 +38,8 @@ export default function TempoPractice({ visible }: TempoPracticeProps) {
   const cycleLevel = () => {
     const currentIndex = SUPPORT_LEVELS.findIndex((l) => l.key === tempoSupportLevel);
     const nextIndex = (currentIndex + 1) % SUPPORT_LEVELS.length;
-    setTempoSupportLevel(SUPPORT_LEVELS[nextIndex].key);
+    const nextLevel = SUPPORT_LEVELS[nextIndex];
+    if (nextLevel) setTempoSupportLevel(nextLevel.key);
   };
 
   // Animate toast in/out

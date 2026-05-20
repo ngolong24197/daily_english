@@ -128,7 +128,7 @@ export default function JamAlongScreen() {
     (text: string) => {
       if (!script || isComplete) return;
       const currentLine = script.lines[currentLineIndex];
-      if (currentLine?.speaker !== 'user') return;
+      if (!currentLine || currentLine.speaker !== 'user') return;
 
       setUserInputs((prev) => ({ ...prev, [currentLineIndex]: text }));
       setCompletedLines((prev) => [...prev, { ...currentLine, text }]);

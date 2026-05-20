@@ -52,7 +52,7 @@ export default function WordExplorationSheet({
   const trySaying = getTrySaying(word, modeCode);
   const availableModes = getAvailableModesForWord(word);
   const mastery = masteryLevel ?? 'seed';
-  const masteryConfig = MASTERY_CONFIG[mastery];
+  const masteryConfig = MASTERY_CONFIG[mastery] ?? MASTERY_CONFIG.seed;
 
   return (
     <Modal

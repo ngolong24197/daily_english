@@ -69,7 +69,7 @@ export function getModeBadgeLabel(mode: ModeCode): string {
     ielts: 'IELTS',
     toeic: 'TOEIC',
   };
-  return labels[mode];
+  return labels[mode] ?? 'Survival';
 }
 
 /**
@@ -83,7 +83,7 @@ export function getModeBadgeColor(mode: ModeCode): { bg: string; text: string } 
     ielts: { bg: 'rgba(106, 160, 192, 0.15)', text: '#3A6A8F' },
     toeic: { bg: 'rgba(196, 149, 100, 0.15)', text: '#8B6B3D' },
   };
-  return colors[mode];
+  return colors[mode] ?? { bg: 'rgba(91, 140, 90, 0.15)', text: '#5B8C5A' };
 }
 
 /**

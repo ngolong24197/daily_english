@@ -69,11 +69,11 @@ export default function HistoryScreen() {
             hour: 'numeric',
             minute: '2-digit',
           });
-          const firstSentence = session.userSentences[0] ?? 'No sentences';
-          const sentenceCount = session.userSentences.length;
-          const wordCount = session.newWords.length + session.reviewWords.length;
-          const modeBadgeColors = getModeBadgeColor(session.mode);
-          const modeBadgeLabel = getModeBadgeLabel(session.mode);
+          const firstSentence = (session.userSentences ?? [])[0] ?? 'No sentences';
+          const sentenceCount = (session.userSentences ?? []).length;
+          const wordCount = (session.newWords ?? []).length + (session.reviewWords ?? []).length;
+          const modeBadgeColors = getModeBadgeColor(session.mode ?? 'survival');
+          const modeBadgeLabel = getModeBadgeLabel(session.mode ?? 'survival');
 
           return (
             <TouchableOpacity
@@ -168,16 +168,16 @@ function SessionDetailModal({
           </View>
 
           {/* Words learned */}
-          {(session.newWords.length > 0 || session.reviewWords.length > 0) && (
+          {((session.newWords ?? []).length > 0 || (session.reviewWords ?? []).length > 0) && (
             <View style={detailStyles.section}>
               <Text style={detailStyles.sectionTitle}>Words this session</Text>
               <View style={detailStyles.wordChips}>
-                {session.newWords.map((w) => (
+                {(session.newWords ?? []).map((w) => (
                   <View key={w.id} style={detailStyles.newWordChip}>
                     <Text style={detailStyles.newWordChipText}>{w.lemma}</Text>
                   </View>
                 ))}
-                {session.reviewWords.map((w) => (
+                {(session.reviewWords ?? []).map((w) => (
                   <View key={w.id} style={detailStyles.reviewWordChip}>
                     <Text style={detailStyles.reviewWordChipText}>{w.lemma}</Text>
                   </View>
@@ -189,7 +189,7 @@ function SessionDetailModal({
           {/* Full dialogue */}
           <Text style={detailStyles.sectionTitle}>Conversation</Text>
           <ScrollView style={detailStyles.dialogueScroll}>
-            {session.messages.map((msg, idx) => (
+            {(session.messages ?? []).map((msg, idx) => (
               <View
                 key={idx}
                 style={[

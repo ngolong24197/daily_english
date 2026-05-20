@@ -11,6 +11,9 @@ const ONBOARDING_COMPLETE_KEY = 'onboarding_complete';
 const EXAM_PRACTICE_MODE_KEY = 'exam_practice_mode';
 const COMPLETED_SESSIONS_KEY = 'completed_sessions';
 
+const VALID_MODES: ModeCode[] = ['survival', 'professional', 'social', 'ielts', 'toeic'];
+const VALID_EXAM_MODES: ExamPracticeMode[] = ['exam', 'daily'];
+
 export type SessionStep = 'checkin' | 'scene' | 'conversation' | 'jamAlong' | 'review' | 'complete';
 export type ExamPracticeMode = 'exam' | 'daily';
 export type PracticeFormat = 'conversation' | 'jamAlong';
@@ -104,7 +107,8 @@ function loadCompletedSessions(): CompletedSession[] {
   try {
     const data = storage.getString(COMPLETED_SESSIONS_KEY);
     if (data) {
-      return JSON.parse(data) as CompletedSession[];
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) return parsed as CompletedSession[];
     }
   } catch {
     // Corrupted data — start fresh
@@ -112,12 +116,22 @@ function loadCompletedSessions(): CompletedSession[] {
   return [];
 }
 
+function safeModeCode(value: string | undefined): ModeCode {
+  if (value && (VALID_MODES as string[]).includes(value)) return value as ModeCode;
+  return 'survival';
+}
+
+function safeExamMode(value: string | undefined): ExamPracticeMode {
+  if (value && (VALID_EXAM_MODES as string[]).includes(value)) return value as ExamPracticeMode;
+  return 'exam';
+}
+
 export const useSessionStore = create<SessionState>((set, get) => ({
   currentStep: 'checkin',
   dayResponse: null,
   selectedMood: null,
   selectedPhrase: null,
-  currentMode: (storage.getString(MODE_STORAGE_KEY) as ModeCode) || 'survival',
+  currentMode: safeModeCode(storage.getString(MODE_STORAGE_KEY)),
   currentScene: null,
   conversationMessages: [],
   wordsUsedThisSession: [],
@@ -132,8 +146,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   inputMode: 'speech',
   contextChanges: {},
   onboardingComplete: storage.getString(ONBOARDING_COMPLETE_KEY) === 'true',
-  isExamMode: (storage.getString(MODE_STORAGE_KEY) as ModeCode) === 'ielts' || (storage.getString(MODE_STORAGE_KEY) as ModeCode) === 'toeic',
-  examPracticeMode: (storage.getString(EXAM_PRACTICE_MODE_KEY) as ExamPracticeMode) || 'exam',
+  isExamMode: safeModeCode(storage.getString(MODE_STORAGE_KEY)) === 'ielts' || safeModeCode(storage.getString(MODE_STORAGE_KEY)) === 'toeic',
+  examPracticeMode: safeExamMode(storage.getString(EXAM_PRACTICE_MODE_KEY)),
   examScore: null,
   practiceFormat: 'conversation',
   jamAlongScriptId: null,

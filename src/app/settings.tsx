@@ -40,12 +40,14 @@ export default function SettingsScreen() {
     haptics.selectionChanged();
 
     // Check if track is premium and user is not premium
-    if (MODES[modeCode].is_premium && !subscriptionService.isTrackAvailable(modeCode)) {
+    const modeData = MODES[modeCode];
+    if (!modeData) return;
+    if (modeData.is_premium && !subscriptionService.isTrackAvailable(modeCode)) {
       setShowUpgradeSheet(true);
       return;
     }
 
-    const mode = MODES[modeCode];
+    const mode = modeData;
     const switchMessage = getModeSwitchMessage(modeCode);
 
     if (isExamMode(modeCode)) {

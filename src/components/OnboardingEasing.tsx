@@ -69,7 +69,8 @@ export function getOnboardingStep(): OnboardingStep | null {
     return null;
   }
   const step = storage.getNumber(ONBOARDING_STEP_KEY);
-  return (step || 1) as OnboardingStep;
+  const valid = step && step >= 1 && step <= 5 ? step : 1;
+  return valid as OnboardingStep;
 }
 
 /**
@@ -97,7 +98,8 @@ export function saveOnboardingStep(step: OnboardingStep): void {
 export default function OnboardingEasing({ onComplete, onStep3Select, onStep4MicPress }: OnboardingEasingProps) {
   const [step, setStep] = useState<OnboardingStep>(() => {
     const saved = storage.getNumber(ONBOARDING_STEP_KEY);
-    return (saved || 1) as OnboardingStep;
+    const valid = saved && saved >= 1 && saved <= 5 ? saved : 1;
+    return valid as OnboardingStep;
   });
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
@@ -134,7 +136,7 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
     onComplete();
   };
 
-  const currentStep = STEPS[step];
+  const currentStep = STEPS[step] ?? STEPS[1];
 
   // Step 3: Emoji selection
   if (step === 3) {

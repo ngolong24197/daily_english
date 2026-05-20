@@ -47,7 +47,7 @@ export default function ReviewScreen() {
   // Calculate exam score if in exam mode
   const messages = latestSession?.messages ?? conversationMessages;
   const targetWords = currentScene
-    ? [...currentScene.newWords.map((w) => w.lemma), ...currentScene.reviewWords.map((w) => w.lemma)]
+    ? [...(currentScene.newWords ?? []).map((w) => w.lemma), ...(currentScene.reviewWords ?? []).map((w) => w.lemma)]
     : [];
   const examScore = examMode && messages.length > 0
     ? calculateAccuracyScore(
@@ -166,11 +166,11 @@ export default function ReviewScreen() {
         </View>
 
         {/* New words section */}
-        {newWords.length > 0 && (
+        {(newWords ?? []).length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>New words today</Text>
             <View style={styles.chipRow}>
-              {newWords.map((word) => {
+              {(newWords ?? []).map((word) => {
                 const wordBadgeColors = getModeBadgeColor(modeCode);
                 return (
                   <View key={word.id} style={styles.newWordChip}>
@@ -184,10 +184,10 @@ export default function ReviewScreen() {
         )}
 
         {/* Review words section — with context changes */}
-        {reviewWords.length > 0 && (
+        {(reviewWords ?? []).length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Words you revisited</Text>
-            {reviewWords.map((word) => {
+            {(reviewWords ?? []).map((word) => {
               const contextChange = contextChanges[word.id] ?? latestSession?.contextChanges?.[word.id];
               return (
                 <View key={word.id} style={styles.reviewWordCard}>

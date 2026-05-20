@@ -103,6 +103,20 @@ export function createConversation(mode: ModeCode = 'survival', sceneId?: string
   const script = sceneId
     ? getConversationScriptForScene(sceneId, mode)
     : getConversationScriptByMode(mode);
+  if (!script || script.length === 0) {
+    // Fallback: create a minimal conversation if no script found
+    return {
+      messages: [{
+        id: 'msg-npc-0',
+        speaker: 'npc',
+        text: "Hello! How can I help you today?",
+        timestamp: Date.now(),
+        wordsUsed: [],
+      }],
+      currentStepIndex: 0,
+      isComplete: false,
+    };
+  }
   const firstNpcText = script[0].npcText;
   return {
     messages: [
