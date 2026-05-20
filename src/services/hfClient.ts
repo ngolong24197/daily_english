@@ -1,8 +1,8 @@
 /**
- * Hugging Face Inference Client — Wrapper for HF serverless Inference API.
+ * Hugging Face Inference Client — Wrapper for HF Inference Providers API.
  *
- * Uses the OpenAI-compatible /v1/chat/completions endpoint.
- * Free tier: ~300 requests/hour with a HF access token.
+ * Uses the OpenAI-compatible /v1/chat/completions endpoint via the HF Router.
+ * Free tier with monthly credits for HF users.
  *
  * If the API key is missing or the request fails, callers should gracefully
  * fall back to rule-based evaluation (Tier 1+2 only, skip Tier 3 LLM).
@@ -10,12 +10,12 @@
 
 const HF_API_BASE =
   process.env.EXPO_PUBLIC_HUGGINGFACE_API_BASE ??
-  'https://api-inference.huggingface.co/v1';
+  'https://router.huggingface.co/v1';
 const HF_API_KEY =
   process.env.EXPO_PUBLIC_HUGGINGFACE_API_KEY ?? '';
 const HF_MODEL =
   process.env.EXPO_PUBLIC_HUGGINGFACE_MODEL ??
-  'meta-llama/Meta-Llama-3.1-8B-Instruct';
+  'meta-llama/Llama-3.1-8B-Instruct';
 const DEFAULT_TIMEOUT_MS = 30000;
 
 export interface ChatMessage {

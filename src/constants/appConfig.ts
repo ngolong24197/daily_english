@@ -35,9 +35,9 @@ export const APP_CONFIG = {
   api: {
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
-    hfApiBase: process.env.EXPO_PUBLIC_HUGGINGFACE_API_BASE ?? 'https://api-inference.huggingface.co/v1',
+    hfApiBase: process.env.EXPO_PUBLIC_HUGGINGFACE_API_BASE ?? 'https://router.huggingface.co/v1',
     hfApiKey: process.env.EXPO_PUBLIC_HUGGINGFACE_API_KEY ?? '',
-    hfModel: process.env.EXPO_PUBLIC_HUGGINGFACE_MODEL ?? 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+    hfModel: process.env.EXPO_PUBLIC_HUGGINGFACE_MODEL ?? 'meta-llama/Llama-3.1-8B-Instruct',
   } as const,
 
   /** Feature flags — toggle features on/off */
