@@ -1,4 +1,4 @@
-import JamAlongScreen from '../components/JamAlongScreen';
+import JamAlongScreen from '@/components/JamAlongScreen';
 
 export default function JamAlongRoute() {
   return <JamAlongScreen />;

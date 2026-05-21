@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
-import { useSessionStore, type CompletedSession } from '../stores/sessionStore';
-import { getModeBadgeColor, getModeBadgeLabel } from '../services/wordService';
-import { subscriptionService } from '../services/subscriptionService';
-import { useEntranceAnimation } from '../hooks/useEntranceAnimation';
-import { HistoryEmptyState } from '../components/SkeletonScreens';
+import { colors, typography, spacing, radii } from '@/constants/theme';
+import { useSessionStore, type CompletedSession } from '@/stores/sessionStore';
+import { getModeBadgeColor, getModeBadgeLabel } from '@/services/wordService';
+import { subscriptionService } from '@/services/subscriptionService';
+import { useEntranceAnimation } from '@/hooks/useEntranceAnimation';
+import { HistoryEmptyState } from '@/components/SkeletonScreens';
 
 export default function HistoryScreen() {
   const { completedSessions } = useSessionStore();

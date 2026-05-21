@@ -14,9 +14,9 @@ import { lazy } from 'react';
  * These screens are not in the initial flow and should be loaded on demand.
  * History, My Words, and Settings are accessed via navigation drawer.
  */
-export const LazyHistoryScreen = lazy(() => import('../app/history'));
-export const LazyWordsScreen = lazy(() => import('../app/words'));
-export const LazySettingsScreen = lazy(() => import('../app/settings'));
+export const LazyHistoryScreen = lazy(() => import('../app/(auth)/history'));
+export const LazyWordsScreen = lazy(() => import('../app/(auth)/words'));
+export const LazySettingsScreen = lazy(() => import('../app/(auth)/settings'));
 
 /**
  * Prefetch next scene data while current conversation is in progress.

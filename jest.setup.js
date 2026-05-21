@@ -61,6 +61,7 @@ jest.mock('expo-router', () => {
     usePathname: () => '/',
     useGlobalSearchParams: () => ({}),
     Redirect: View,
+    Slot: ({ children }: any) => React.createElement(View, null, children),
     Stack: { Screen: View },
     Drawer: {
       Screen: View,
@@ -177,9 +178,20 @@ jest.mock('react-native-css-interop', () => ({
   StyleMock: { displayName: 'StyleMock' },
 }));
 
+jest.mock('react-native-url-polyfill', () => ({}));
+jest.mock('react-native-url-polyfill/auto', () => {});
+
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
-    auth: { getSession: jest.fn(), onAuthStateChange: jest.fn() },
+    auth: {
+      getSession: jest.fn(() => Promise.resolve({ data: { session: null } })),
+      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
+      signOut: jest.fn(),
+      signInWithPassword: jest.fn(),
+      signInWithOtp: jest.fn(),
+      signInWithOAuth: jest.fn(),
+      signUp: jest.fn(),
+    },
     from: jest.fn(() => ({
       select: jest.fn(() => ({ eq: jest.fn(() => ({ data: [], error: null })) })),
     })),

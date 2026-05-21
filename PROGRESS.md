@@ -71,3 +71,27 @@ Flow for each story: **spec → plan → implement → test → review → commi
 - [ ] Run seed SQL against Supabase project
 - [ ] Integration test: connected + disconnected paths
 - [ ] Commit to GitHub
+
+---
+
+## 2026-05-22
+
+### Story 1.3: Authentication Flow — Implementation Complete
+
+**7 tasks completed on branch `feature/story-1.3-authentication`:**
+1. Secure session storage — `src/lib/secureStorageAdapter.ts` (expo-secure-store), `src/lib/urlPolyfills.ts` (react-native-url-polyfill), updated `src/lib/supabase.ts` with `storage` and `detectSessionInUrl: true`
+2. Auth store — `src/stores/authStore.ts` (Zustand): session, user, loading, initialized, guestMode + setSession, setGuestMode, signOut, initialize actions
+3. Auth provider — `src/components/AuthProvider.tsx`: initializes auth store, shows spinner until initialized
+4. Route protection — `src/app/(auth)/_layout.tsx`: Drawer layout with auth gate (redirect to /auth/login if no session and not guest). Moved 6 screen files into `(auth)/` group with `@/` imports.
+5. Login screen — `src/app/auth/login.tsx`: email/password, magic link, OAuth (Google/Apple), "Continue as Guest" button. `src/app/auth/callback.tsx` for OAuth/magic-link redirects.
+6. Sign-out in Settings — Account section: shows email + Sign Out for authenticated, "Sign in to sync" for guests
+7. Auth store tests — 5 tests covering initial state, setSession, setGuestMode, signOut, session clears guestMode
+
+**Root layout restructured:** `src/app/_layout.tsx` now minimal (GestureHandlerRootView + AuthProvider + Slot). Drawer moved to `(auth)/_layout.tsx`.
+
+**Verification:** `npx tsc --noEmit` 0 errors, `npx jest` 29 tests pass
+
+### Important notes
+- Each story/phase on its own branch + PR for review before merge
+- Guest mode: unauthenticated users can use the full app with local data
+- Auth methods: magic link, email/password, OAuth (Google/Apple)

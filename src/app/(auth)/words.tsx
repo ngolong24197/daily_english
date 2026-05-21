@@ -1,18 +1,18 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
-import { useSessionStore } from '../stores/sessionStore';
-import { wordProgressStore, type MasteryLevel } from '../services/wordProgress';
-import { type MockWord } from '../services/mockData';
-import { getWords } from '../services/supabaseDataService';
-import { getWordModeEntry, getModeBadgeColor, getModeBadgeLabel } from '../services/wordService';
-import { subscriptionService } from '../services/subscriptionService';
-import WordExplorationSheet from '../components/WordExplorationSheet';
-import { useEntranceAnimation } from '../hooks/useEntranceAnimation';
-import { useHaptics } from '../hooks/useHaptics';
-import { MyWordsEmptyState } from '../components/SkeletonScreens';
-import { wordChipLabel } from '../utils/accessibility';
-import type { ModeCode } from '../types';
+import { colors, typography, spacing, radii } from '@/constants/theme';
+import { useSessionStore } from '@/stores/sessionStore';
+import { wordProgressStore, type MasteryLevel } from '@/services/wordProgress';
+import { type MockWord } from '@/services/mockData';
+import { getWords } from '@/services/supabaseDataService';
+import { getWordModeEntry, getModeBadgeColor, getModeBadgeLabel } from '@/services/wordService';
+import { subscriptionService } from '@/services/subscriptionService';
+import WordExplorationSheet from '@/components/WordExplorationSheet';
+import { useEntranceAnimation } from '@/hooks/useEntranceAnimation';
+import { useHaptics } from '@/hooks/useHaptics';
+import { MyWordsEmptyState } from '@/components/SkeletonScreens';
+import { wordChipLabel } from '@/utils/accessibility';
+import type { ModeCode } from '@/types';
 
 const MASTERY_CONFIG: Record<MasteryLevel, { emoji: string; label: string; description: string; color: string }> = {
   seed: {
