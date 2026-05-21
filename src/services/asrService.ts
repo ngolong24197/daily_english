@@ -9,11 +9,8 @@
  * - Event-based: results stream in real-time, final result triggers processing
  */
 
-import {
-  SpeechRecognition,
-  SpeechRecognitionEvent,
-  SpeechRecognitionErrorEvent,
-} from 'expo-speech-recognition';
+import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
+import type { ExpoSpeechRecognitionErrorEvent, ExpoSpeechRecognitionOptions, ExpoSpeechRecognitionResultEvent } from 'expo-speech-recognition';
 
 export interface AsrResult {
   text: string;
@@ -37,7 +34,7 @@ type AsrOutcome =
  */
 export async function isSpeechRecognitionAvailable(): Promise<boolean> {
   try {
-    return await SpeechRecognition.isAvailableAsync();
+    return await ExpoSpeechRecognitionModule.isAvailableAsync();
   } catch {
     return false;
   }
@@ -49,7 +46,7 @@ export async function isSpeechRecognitionAvailable(): Promise<boolean> {
  */
 export async function requestSpeechPermissions(): Promise<boolean> {
   try {
-    const { status } = await SpeechRecognition.requestPermissionsAsync();
+    const { status } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
     return status === 'granted';
   } catch {
     return false;
@@ -61,7 +58,7 @@ export async function requestSpeechPermissions(): Promise<boolean> {
  */
 export async function checkSpeechPermissions(): Promise<'granted' | 'denied' | 'undetermined'> {
   try {
-    const { status } = await SpeechRecognition.getPermissionsAsync();
+    const { status } = await ExpoSpeechRecognitionModule.getPermissionsAsync();
     if (status === 'granted') return 'granted';
     if (status === 'denied') return 'denied';
     return 'undetermined';
@@ -104,9 +101,9 @@ export function startListening(options: {
   let endSubscription: { remove: () => void } | null = null;
 
   // Subscribe to events before starting
-  resultSubscription = SpeechRecognition.addListener(
+  resultSubscription = ExpoSpeechRecognitionModule.addListener(
     'result',
-    (event: SpeechRecognitionEvent) => {
+    (event: ExpoSpeechRecognitionResultEvent) => {
       const transcript = event.results[0]?.transcript?.trim() ?? '';
       if (!transcript) return;
 
@@ -119,25 +116,25 @@ export function startListening(options: {
     }
   );
 
-  errorSubscription = SpeechRecognition.addListener(
+  errorSubscription = ExpoSpeechRecognitionModule.addListener(
     'error',
-    (event: SpeechRecognitionErrorEvent) => {
+    (event: ExpoSpeechRecognitionErrorEvent) => {
       const asrError = classifySpeechError(event.error);
       options.onError?.(asrError);
     }
   );
 
-  startSubscription = SpeechRecognition.addListener('start', () => {
+  startSubscription = ExpoSpeechRecognitionModule.addListener('start', () => {
     options.onStart?.();
   });
 
-  endSubscription = SpeechRecognition.addListener('end', () => {
+  endSubscription = ExpoSpeechRecognitionModule.addListener('end', () => {
     cleanup();
     options.onEnd?.();
   });
 
   // Start recognition
-  const startOptions: Record<string, unknown> = {
+  const startOptions: ExpoSpeechRecognitionOptions = {
     lang: 'en',
     interimResults: true,
     continuous: false,
@@ -145,10 +142,12 @@ export function startListening(options: {
 
   // Android supports vocabulary hints to improve recognition
   if (options.vocabulary && options.vocabulary.length > 0 && Platform.OS === 'android') {
-    startOptions.hints = options.vocabulary;
+    startOptions.contextualStrings = options.vocabulary;
   }
 
-  SpeechRecognition.start(startOptions as any).catch((err: unknown) => {
+  try {
+    ExpoSpeechRecognitionModule.start(startOptions);
+  } catch (err: unknown) {
     const asrError: AsrError = {
       type: 'unknown',
       message: 'Could not start speech recognition. You can type your response instead.',
@@ -156,7 +155,7 @@ export function startListening(options: {
     };
     options.onError?.(asrError);
     cleanup();
-  });
+  }
 
   function cleanup() {
     resultSubscription?.remove();
@@ -172,7 +171,7 @@ export function startListening(options: {
   return {
     stop: () => {
       try {
-        SpeechRecognition.stop();
+        ExpoSpeechRecognitionModule.stop();
       } catch {
         // Already stopped
       }
@@ -180,7 +179,7 @@ export function startListening(options: {
     },
     abort: () => {
       try {
-        SpeechRecognition.abort();
+        ExpoSpeechRecognitionModule.abort();
       } catch {
         // Already stopped
       }

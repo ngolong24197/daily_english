@@ -5,7 +5,7 @@
  * No jarring or technical loading indicators.
  */
 
-import { View, Animated, StyleSheet } from 'react-native';
+import { View, Animated, StyleSheet, type DimensionValue } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { colors, spacing, radii } from '../constants/theme';
 import { useReduceMotion } from '../hooks/useReduceMotion';
@@ -67,7 +67,7 @@ export function SkeletonBase({
       style={[
         styles.skeletonBase,
         {
-          width,
+          width: width as DimensionValue,
           height,
           borderRadius,
           marginBottom,

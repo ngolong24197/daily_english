@@ -8,7 +8,7 @@ export interface MockWord {
   id: string;
   lemma: string;
   pos: string;
-  modeEntries: Record<ModeCode, WordModeEntry>;
+  modeEntries: Partial<Record<ModeCode, WordModeEntry>>;
   isNew: boolean;
 }
 

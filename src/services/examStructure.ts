@@ -606,7 +606,7 @@ export function getExamTransitionMessage(examType: 'ielts' | 'toeic', stepIndex:
  */
 export function getExamConversationSteps(
   examType: 'ielts' | 'toeic'
-): import('./conversationEngine').ConversationStep[] {
+): import('./mockData').ConversationStep[] {
   if (examType === 'ielts') {
     return [
       {

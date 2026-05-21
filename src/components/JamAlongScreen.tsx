@@ -34,7 +34,7 @@ export default function JamAlongScreen() {
     setPracticeFormat,
   } = useSessionStore();
 
-  const script: JamAlongScript | null = jamAlongScriptId
+  const script: JamAlongScript | null | undefined = jamAlongScriptId
     ? getJamAlongScript(jamAlongScriptId)
     : currentScene
       ? currentScene.modeCode === 'professional' || currentScene.modeCode === 'ielts' || currentScene.modeCode === 'toeic'
@@ -439,13 +439,13 @@ export default function JamAlongScreen() {
 
 const jamStyles = {
   container: {
-    flex: 1 as const,
+    flex: 1,
     backgroundColor: '#FFF8F0', // Warm tint for Jam Along mode
   },
   stageLabel: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
@@ -456,7 +456,7 @@ const jamStyles = {
   },
   stageTitle: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
   },
   stageSubtitle: {
@@ -474,8 +474,8 @@ const jamStyles = {
   },
   // Native speaker line styling
   nativeLineRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'flex-start' as const,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: spacing.sm,
   },
   nativeReplayButton: {
@@ -483,8 +483,8 @@ const jamStyles = {
     height: 28,
     borderRadius: radii.full,
     backgroundColor: colors.light.conversationPartner,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 2,
   },
   nativeReplayIcon: {
@@ -492,7 +492,7 @@ const jamStyles = {
     color: colors.light.textPrimary,
   },
   nativeLineBubble: {
-    maxWidth: '80%' as const,
+    maxWidth: '80%',
     backgroundColor: colors.light.conversationPartner,
     borderRadius: radii.md,
     borderBottomLeftRadius: 4,
@@ -506,11 +506,11 @@ const jamStyles = {
   },
   // User line styling (completed)
   userLineRow: {
-    flexDirection: 'row' as const,
-    justifyContent: 'flex-end' as const,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   userLineBubble: {
-    maxWidth: '80%' as const,
+    maxWidth: '80%',
     backgroundColor: colors.light.conversationUser,
     borderRadius: radii.md,
     borderBottomRightRadius: 4,
@@ -520,7 +520,7 @@ const jamStyles = {
   userLineLabel: {
     fontSize: typography.caption.fontSize,
     color: colors.light.primary,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     marginBottom: 2,
   },
   userLineText: {
@@ -530,10 +530,10 @@ const jamStyles = {
   },
   // Active user slot (pulsing)
   userSlotContainer: {
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   userSlotBubble: {
-    width: '90%' as const,
+    width: '90%',
     backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.lg,
     borderWidth: 2,
@@ -541,7 +541,7 @@ const jamStyles = {
     borderStyle: 'dashed',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     gap: spacing.xs,
   },
   micIcon: {
@@ -549,13 +549,13 @@ const jamStyles = {
   },
   yourTurnLabel: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.primary,
   },
   userSlotHint: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textSecondary,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
   },
   // Hint bar
   hintBar: {
@@ -584,7 +584,7 @@ const jamStyles = {
     fontSize: typography.hint.fontSize,
     color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
   // Input area
   inputArea: {
@@ -595,7 +595,7 @@ const jamStyles = {
   speechControls: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     gap: spacing.lg,
   },
   textInputArea: {
@@ -603,8 +603,8 @@ const jamStyles = {
     paddingVertical: spacing.sm,
   },
   textInputRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   textInput: {
@@ -623,20 +623,20 @@ const jamStyles = {
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    justifyContent: 'center' as const,
+    justifyContent: 'center',
     height: 44,
   },
   sendButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   hintButton: {
     width: 44,
     height: 44,
     borderRadius: radii.full,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.light.border,
   },
@@ -649,23 +649,23 @@ const jamStyles = {
   typeInsteadText: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    textDecorationLine: 'underline' as const,
+    textDecorationLine: 'underline',
   },
   // Completion
   completeIndicator: {
     paddingVertical: spacing.lg,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   completeTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.primary,
     marginBottom: spacing.xs,
   },
   completeText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
   // Dialogue review
   dialogueReview: {
@@ -686,7 +686,7 @@ const jamStyles = {
   reviewSpeaker: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textSecondary,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     marginBottom: 2,
   },
   reviewText: {
@@ -695,7 +695,7 @@ const jamStyles = {
     lineHeight: typography.body.lineHeight,
   },
   reviewTextUser: {
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   // Footer actions
   footerActions: {
@@ -706,18 +706,18 @@ const jamStyles = {
   },
   switchFormatButton: {
     paddingVertical: spacing.sm,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   switchFormatText: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textSecondary,
-    textDecorationLine: 'underline' as const,
+    textDecorationLine: 'underline',
   },
   // Error state
   errorText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginTop: spacing['3xl'],
   },
   backBtn: {
@@ -726,11 +726,11 @@ const jamStyles = {
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
-    alignSelf: 'center' as const,
+    alignSelf: 'center',
   },
   backBtnText: {
     color: '#FFFFFF',
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
   },
-};
+} as const;

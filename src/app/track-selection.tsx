@@ -190,7 +190,7 @@ export default function TrackSelectionScreen() {
 
 const styles = {
   container: {
-    flex: 1 as const,
+    flex: 1,
     backgroundColor: colors.light.bg,
   },
   contentContainer: {
@@ -199,21 +199,21 @@ const styles = {
     paddingBottom: spacing['2xl'],
   },
   header: {
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginBottom: spacing.xl,
   },
   title: {
     fontSize: typography.display.fontSize,
-    fontWeight: typography.display.fontWeight as const,
+    fontWeight: typography.display.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.display.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginTop: spacing.sm,
   },
   cardsContainer: {
@@ -231,8 +231,8 @@ const styles = {
     backgroundColor: 'rgba(91, 140, 90, 0.05)',
   },
   trackCardHeader: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.md,
     marginBottom: spacing.sm,
   },
@@ -240,11 +240,11 @@ const styles = {
     fontSize: 32,
   },
   trackCardHeaderText: {
-    flex: 1 as const,
+    flex: 1,
   },
   trackCardTitle: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
@@ -253,7 +253,7 @@ const styles = {
   },
   premiumBadge: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.secondary,
     marginTop: 2,
   },
@@ -262,13 +262,13 @@ const styles = {
     height: 24,
     borderRadius: radii.full,
     backgroundColor: colors.light.primary,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   selectedCheckmarkText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '700' as const,
+    fontWeight: '700',
   },
   trackCardDescription: {
     fontSize: typography.body.fontSize,
@@ -280,8 +280,8 @@ const styles = {
     color: colors.light.textPrimary,
   },
   exampleContainer: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
@@ -290,12 +290,12 @@ const styles = {
   exampleLabel: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   exampleSentence: {
     fontSize: typography.caption.fontSize,
     color: colors.light.primary,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
     flex: 1,
   },
   exampleSentenceSelected: {
@@ -303,25 +303,25 @@ const styles = {
   },
   confirmSection: {
     marginTop: spacing.xl,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   confirmButton: {
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    width: '100%' as const,
-    alignItems: 'center' as const,
+    width: '100%',
+    alignItems: 'center',
   },
   confirmButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   confirmNote: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginTop: spacing.md,
   },
-};
+} as const;

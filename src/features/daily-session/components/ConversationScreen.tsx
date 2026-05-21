@@ -512,23 +512,23 @@ const styles = {
     fontSize: typography.caption.fontSize,
     color: colors.light.textPrimary,
     lineHeight: typography.caption.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
   header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.light.border,
   },
   headerLeft: {
-    flex: 1 as const,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
-    flexWrap: 'wrap' as const,
+    flexWrap: 'wrap',
   },
   sceneLabel: {
     fontSize: typography.caption.fontSize,
@@ -538,15 +538,15 @@ const styles = {
   examLabel: {
     fontSize: typography.caption.fontSize,
     color: '#4A7A9B',
-    fontWeight: '600' as const,
+    fontWeight: '600',
     marginTop: 2,
   },
   headerHintButton: {
     width: 36,
     height: 36,
     borderRadius: radii.full,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.light.border,
   },
@@ -568,7 +568,7 @@ const styles = {
   errorText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginTop: spacing['3xl'],
   },
   backBtn: {
@@ -577,37 +577,37 @@ const styles = {
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
-    alignSelf: 'center' as const,
+    alignSelf: 'center',
   },
   backBtnText: {
     color: '#FFFFFF',
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
   },
   messageRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'flex-end' as const,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     gap: spacing.sm,
   },
   messageRowUser: {
-    justifyContent: 'flex-end' as const,
+    justifyContent: 'flex-end',
   },
   messageRowPartner: {
-    justifyContent: 'flex-start' as const,
+    justifyContent: 'flex-start',
   },
   avatar: {
     width: 28,
     height: 28,
     borderRadius: radii.full,
     backgroundColor: colors.light.conversationPartner,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarText: {
     fontSize: 14,
   },
   messageBubble: {
-    maxWidth: '80%' as const,
+    maxWidth: '80%',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -631,7 +631,7 @@ const styles = {
   youLabel: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    alignSelf: 'flex-end' as const,
+    alignSelf: 'flex-end',
   },
   contextChangeBanner: {
     backgroundColor: 'rgba(232, 168, 124, 0.15)',
@@ -639,8 +639,8 @@ const styles = {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginBottom: spacing.sm,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
   },
   contextChangeEmoji: {
@@ -654,11 +654,11 @@ const styles = {
   },
   completeIndicator: {
     paddingVertical: spacing.lg,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   completeText: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.primary,
   },
   asrStatusBanner: {
@@ -673,11 +673,11 @@ const styles = {
     fontSize: typography.hint.fontSize,
     color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
   examHintBanner: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
     backgroundColor: 'rgba(58, 106, 143, 0.1)',
     borderRadius: radii.md,
@@ -716,7 +716,7 @@ const styles = {
   speechInputArea: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   typeInsteadLink: {
     paddingVertical: spacing.xs,
@@ -725,11 +725,11 @@ const styles = {
   typeInsteadText: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    textDecorationLine: 'underline' as const,
+    textDecorationLine: 'underline',
   },
   speechControls: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.lg,
   },
   textInputArea: {
@@ -739,12 +739,12 @@ const styles = {
   fallbackMessage: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textSecondary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginBottom: spacing.sm,
   },
   textInputRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   textInputContainer: {
@@ -765,12 +765,12 @@ const styles = {
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    justifyContent: 'center' as const,
+    justifyContent: 'center',
     height: 44,
   },
   sendButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   sendButtonTextDisabled: {
@@ -778,20 +778,20 @@ const styles = {
   },
   trySpeechButton: {
     paddingVertical: spacing.sm,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginTop: spacing.xs,
   },
   trySpeechText: {
     fontSize: typography.caption.fontSize,
     color: colors.light.primary,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   hintButton: {
     width: 44,
     height: 44,
     borderRadius: radii.full,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.light.border,
   },
@@ -802,4 +802,4 @@ const styles = {
   hintButtonIcon: {
     fontSize: 20,
   },
-};
+} as const;

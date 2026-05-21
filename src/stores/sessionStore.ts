@@ -59,8 +59,8 @@ interface SessionState {
   toastMessage: string | null;
 
   setDayResponse: (response: string) => void;
-  setSelectedMood: (mood: string) => void;
-  setSelectedPhrase: (phrase: string) => void;
+  setSelectedMood: (mood: string | null) => void;
+  setSelectedPhrase: (phrase: string | null) => void;
   setCurrentStep: (step: SessionStep) => void;
   setCurrentScene: (scene: MockScene) => void;
   setCurrentMode: (mode: ModeCode) => void;
@@ -234,7 +234,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   showToast: (message) => {
     set({ toastMessage: message });
     setTimeout(() => {
-      useSessionStore.getState().set({ toastMessage: null });
+      useSessionStore.setState({ toastMessage: null });
     }, 2500);
   },
 

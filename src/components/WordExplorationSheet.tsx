@@ -154,15 +154,15 @@ export default function WordExplorationSheet({
 const styles = {
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)' as const,
-    justifyContent: 'flex-end' as const,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'flex-end',
   },
   sheetContent: {
     backgroundColor: colors.light.bg,
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     padding: spacing.lg,
-    maxHeight: '85%' as const,
+    maxHeight: '85%',
     paddingBottom: spacing['2xl'],
   },
   handle: {
@@ -170,15 +170,15 @@ const styles = {
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.light.border,
-    alignSelf: 'center' as const,
+    alignSelf: 'center',
     marginBottom: spacing.lg,
   },
   contextChangeCard: {
     backgroundColor: 'rgba(232, 168, 124, 0.15)',
     borderRadius: radii.md,
     padding: spacing.md,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.lg,
   },
@@ -192,25 +192,25 @@ const styles = {
     lineHeight: typography.body.lineHeight,
   },
   wordHeader: {
-    flexDirection: 'row' as const,
-    alignItems: 'baseline' as const,
+    flexDirection: 'row',
+    alignItems: 'baseline',
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
   wordLemma: {
     fontSize: 28,
-    fontWeight: '700' as const,
+    fontWeight: '700',
     color: colors.light.textPrimary,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
   },
   wordPos: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
-    textTransform: 'lowercase' as const,
+    textTransform: 'lowercase',
   },
   masteryRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
     marginBottom: spacing.sm,
   },
@@ -219,10 +219,10 @@ const styles = {
   },
   masteryLabel: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   modeBadge: {
-    alignSelf: 'flex-start' as const,
+    alignSelf: 'flex-start',
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -230,13 +230,13 @@ const styles = {
   },
   modeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   sectionLabel: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.textMuted,
-    textTransform: 'uppercase' as const,
+    textTransform: 'uppercase',
     marginBottom: spacing.xs,
   },
   explanation: {
@@ -255,7 +255,7 @@ const styles = {
   },
   exampleText: {
     fontSize: typography.body.fontSize,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
     color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
@@ -272,7 +272,7 @@ const styles = {
   },
   trySayingLabel: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.primary,
     marginBottom: spacing.xs,
   },
@@ -290,7 +290,7 @@ const styles = {
     marginBottom: spacing.xs,
   },
   otherModesRow: {
-    flexDirection: 'row' as const,
+    flexDirection: 'row',
     gap: spacing.sm,
   },
   otherModeChip: {
@@ -300,17 +300,17 @@ const styles = {
   },
   otherModeChipText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   dismissButton: {
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   dismissButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
-};
+} as const;

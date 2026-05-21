@@ -196,7 +196,7 @@ export default function ReviewScreen() {
                       <Text style={styles.reviewWordChipText}>{word.lemma}</Text>
                     </View>
                     <Text style={styles.reviewWordContext}>
-                      {word.modeEntry.example_context}
+                      {word.modeEntries?.[modeCode]?.example_context ?? word.modeEntries?.survival?.example_context}
                     </Text>
                   </View>
                   {contextChange && (
@@ -296,7 +296,7 @@ const styles = {
   },
   title: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
     marginTop: spacing.lg,
@@ -311,14 +311,14 @@ const styles = {
     marginBottom: spacing.sm,
   },
   modeBadgeRow: {
-    alignSelf: 'flex-start' as const,
+    alignSelf: 'flex-start',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   modeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   modeContextLabel: {
     fontSize: typography.caption.fontSize,
@@ -331,18 +331,18 @@ const styles = {
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     marginTop: spacing.xs,
-    alignSelf: 'flex-start' as const,
+    alignSelf: 'flex-start',
   },
   examModeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: '#4A7A9B',
   },
   encouragementCard: {
     backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.lg,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginTop: spacing.lg,
     borderWidth: 1,
     borderColor: colors.light.border,
@@ -353,7 +353,7 @@ const styles = {
   },
   encouragementText: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     color: colors.light.primary,
     lineHeight: typography.subheading.lineHeight,
   },
@@ -362,7 +362,7 @@ const styles = {
   },
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: typography.subheading.fontWeight as const,
+    fontWeight: typography.subheading.fontWeight,
     color: colors.light.textPrimary,
     marginBottom: spacing.sm,
   },
@@ -389,11 +389,11 @@ const styles = {
     fontSize: typography.body.fontSize,
     color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
   },
   chipRow: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
   },
   newWordChip: {
@@ -401,14 +401,14 @@ const styles = {
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
   },
   newWordChipText: {
     fontSize: typography.body.fontSize,
     color: colors.light.accentWarm,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   wordModeDot: {
     width: 6,
@@ -424,8 +424,8 @@ const styles = {
     borderColor: colors.light.border,
   },
   reviewWordRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
   reviewWordChip: {
@@ -437,7 +437,7 @@ const styles = {
   reviewWordChipText: {
     fontSize: typography.body.fontSize,
     color: colors.light.primary,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   reviewWordContext: {
     fontSize: typography.caption.fontSize,
@@ -446,8 +446,8 @@ const styles = {
     flex: 1,
   },
   contextChangeRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'flex-start' as const,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     gap: spacing.xs,
     marginTop: spacing.sm,
     paddingTop: spacing.sm,
@@ -464,7 +464,7 @@ const styles = {
     flex: 1,
   },
   adOverlay: {
-    position: 'absolute' as const,
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -473,13 +473,13 @@ const styles = {
     zIndex: 10,
   },
   closingMessage: {
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginTop: spacing.xl,
     marginBottom: spacing.lg,
   },
   closingText: {
     fontSize: typography.body.fontSize,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     color: colors.light.primary,
     lineHeight: typography.body.lineHeight,
   },
@@ -495,23 +495,23 @@ const styles = {
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   primaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   secondaryButton: {
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.light.primary,
   },
   secondaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: colors.light.primary,
   },
-};
+} as const;

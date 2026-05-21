@@ -11,11 +11,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
-import {
-  SpeechRecognition,
-  SpeechRecognitionEvent,
-  SpeechRecognitionErrorEvent,
-} from 'expo-speech-recognition';
+import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
+import type { ExpoSpeechRecognitionErrorEvent, ExpoSpeechRecognitionOptions, ExpoSpeechRecognitionResultEvent } from 'expo-speech-recognition';
 import {
   createVad,
   normalizeAudioLevel,
@@ -107,7 +104,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
       const { status: micStatus } = await Audio.requestPermissionsAsync();
 
       // Request speech recognition permission
-      const { status: speechStatus } = await SpeechRecognition.requestPermissionsAsync();
+      const { status: speechStatus } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
       if (micStatus === 'granted' && speechStatus === 'granted') {
         setPermissionStatus('granted');
@@ -140,7 +137,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
   const checkPermission = useCallback(async () => {
     try {
       const { status: micStatus } = await Audio.getPermissionsAsync();
-      const { status: speechStatus } = await SpeechRecognition.getPermissionsAsync();
+      const { status: speechStatus } = await ExpoSpeechRecognitionModule.getPermissionsAsync();
 
       if (micStatus === 'granted' && speechStatus === 'granted') {
         setPermissionStatus('granted');
@@ -172,7 +169,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
 
     // Check speech recognition availability
     try {
-      const available = await SpeechRecognition.isAvailableAsync();
+      const available = await ExpoSpeechRecognitionModule.isAvailableAsync();
       if (!available) {
         setRecordingState('error');
         setError({
@@ -221,7 +218,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
       // Start speech recognition for actual transcription
       speechRecognitionActiveRef.current = true;
 
-      const startOptions: Record<string, unknown> = {
+      const startOptions: ExpoSpeechRecognitionOptions = {
         lang: 'en',
         interimResults: true,
         continuous: false,
@@ -229,11 +226,11 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
 
       // Pass vocabulary hints on Android for better recognition
       if (options.vocabulary && options.vocabulary.length > 0) {
-        startOptions.hints = options.vocabulary;
+        startOptions.contextualStrings = options.vocabulary;
       }
 
       // Set up event listeners
-      SpeechRecognition.addListener('result', (event: SpeechRecognitionEvent) => {
+      ExpoSpeechRecognitionModule.addListener('result', (event: ExpoSpeechRecognitionResultEvent) => {
         const transcript = event.results[0]?.transcript?.trim() ?? '';
         if (!transcript) return;
 
@@ -248,7 +245,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
         }
       });
 
-      SpeechRecognition.addListener('error', (event: SpeechRecognitionErrorEvent) => {
+      ExpoSpeechRecognitionModule.addListener('error', (event: ExpoSpeechRecognitionErrorEvent) => {
         speechRecognitionActiveRef.current = false;
         const shouldFallback = recordAsrFailure();
         if (shouldFallback) {
@@ -256,16 +253,16 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
         }
       });
 
-      SpeechRecognition.addListener('end', () => {
+      ExpoSpeechRecognitionModule.addListener('end', () => {
         speechRecognitionActiveRef.current = false;
         // Clean up speech recognition listeners
-        SpeechRecognition.removeAllListeners('result');
-        SpeechRecognition.removeAllListeners('error');
-        SpeechRecognition.removeAllListeners('end');
-        SpeechRecognition.removeAllListeners('start');
+        ExpoSpeechRecognitionModule.removeAllListeners('result');
+        ExpoSpeechRecognitionModule.removeAllListeners('error');
+        ExpoSpeechRecognitionModule.removeAllListeners('end');
+        ExpoSpeechRecognitionModule.removeAllListeners('start');
       });
 
-      await SpeechRecognition.start(startOptions as any);
+      await ExpoSpeechRecognitionModule.start(startOptions);
 
       // Haptic feedback on start
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -297,7 +294,7 @@ export function useAudioRecording(options: UseAudioRecordingOptions = {}) {
       // Stop speech recognition
       if (wasRecognizing) {
         try {
-          await SpeechRecognition.stop();
+          await ExpoSpeechRecognitionModule.stop();
         } catch {
           // Already stopped
         }

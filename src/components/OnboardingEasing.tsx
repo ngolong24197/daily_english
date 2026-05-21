@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
     textAlign: 'center',
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   textOptionPreview: {
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   },
   completeButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
 });

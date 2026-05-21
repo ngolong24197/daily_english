@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   scoreTitle: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: typography.subheading.fontWeight as const,
+    fontWeight: typography.subheading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
     marginBottom: spacing.sm,
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   secondaryButton: {
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
   },
   dimensionRow: {
     marginBottom: spacing.md,

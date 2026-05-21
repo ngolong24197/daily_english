@@ -60,18 +60,18 @@ const styles = {
   container: {
     flex: 1,
     backgroundColor: colors.light.bg,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: spacing.lg,
   },
   adCard: {
     backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
     padding: spacing.xl,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.light.border,
-    width: '100%' as const,
+    width: '100%',
   },
   adEmoji: {
     fontSize: 40,
@@ -79,17 +79,17 @@ const styles = {
   },
   adTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginBottom: spacing.sm,
   },
   adDescription: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginBottom: spacing.lg,
   },
   upgradeButton: {
@@ -97,11 +97,11 @@ const styles = {
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   upgradeButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: colors.light.textPrimary,
   },
   continueButton: {
@@ -111,8 +111,8 @@ const styles = {
   },
   continueText: {
     fontSize: typography.body.fontSize,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     color: colors.light.primary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
-};
+} as const;

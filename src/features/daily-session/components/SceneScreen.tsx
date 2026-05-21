@@ -255,9 +255,9 @@ const styles = {
     backgroundColor: colors.light.bg,
   },
   header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
@@ -266,11 +266,11 @@ const styles = {
   headerBack: {
     fontSize: typography.body.fontSize,
     color: colors.light.primary,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   headerTitle: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
   },
   scrollContent: {
@@ -283,7 +283,7 @@ const styles = {
   errorText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginTop: spacing['3xl'],
   },
   backButton: {
@@ -296,20 +296,20 @@ const styles = {
   backButtonText: {
     color: '#FFFFFF',
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
   },
   modeBadgeArea: {
     marginBottom: spacing.md,
   },
   modeBadgeRow: {
-    alignSelf: 'flex-start' as const,
+    alignSelf: 'flex-start',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   modeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
   },
   examModeBadge: {
     backgroundColor: 'rgba(126, 181, 214, 0.15)',
@@ -317,31 +317,31 @@ const styles = {
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     marginTop: spacing.xs,
-    alignSelf: 'flex-start' as const,
+    alignSelf: 'flex-start',
   },
   examModeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: '#4A7A9B',
   },
   sceneCard: {
     backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
-    overflow: 'hidden' as const,
+    overflow: 'hidden',
     marginTop: spacing.sm,
   },
   illustrationArea: {
     height: 200,
     backgroundColor: '#F5EDE4',
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   illustrationEmoji: {
     fontSize: 64,
   },
   illustrationLabel: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     color: colors.light.textSecondary,
     marginTop: spacing.sm,
   },
@@ -349,8 +349,8 @@ const styles = {
     padding: spacing.lg,
   },
   dialogueRow: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   dialogueText: {
     fontSize: typography.bodyLg.fontSize,
@@ -360,8 +360,8 @@ const styles = {
   highlightedWord: {
     fontSize: typography.bodyLg.fontSize,
     color: colors.light.accentWarm,
-    fontWeight: '600' as const,
-    textDecorationLine: 'underline' as const,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
     lineHeight: typography.bodyLg.lineHeight,
   },
   wordsSection: {
@@ -369,13 +369,13 @@ const styles = {
   },
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: typography.subheading.fontWeight as const,
+    fontWeight: typography.subheading.fontWeight,
     color: colors.light.textPrimary,
     marginBottom: spacing.sm,
   },
   chipRow: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
   },
   newWordChip: {
@@ -383,14 +383,14 @@ const styles = {
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
   },
   newWordChipText: {
     fontSize: typography.body.fontSize,
     color: colors.light.accentWarm,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   modeDot: {
     width: 6,
@@ -398,8 +398,8 @@ const styles = {
     borderRadius: 3,
   },
   reviewWordsContainer: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
   },
   reviewWordPill: {
@@ -411,14 +411,14 @@ const styles = {
     borderColor: 'rgba(91, 140, 90, 0.2)',
   },
   reviewWordChipInner: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
   },
   reviewWordChipText: {
     fontSize: typography.body.fontSize,
     color: colors.light.primary,
-    fontWeight: '500' as const,
+    fontWeight: '500',
   },
   reviewWordContextChange: {
     fontSize: typography.caption.fontSize,
@@ -431,17 +431,17 @@ const styles = {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     marginTop: spacing.xl,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   ctaButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   jamAlongButton: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.sm,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
@@ -456,7 +456,7 @@ const styles = {
   },
   jamAlongButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: colors.light.secondary,
   },
-};
+} as const;

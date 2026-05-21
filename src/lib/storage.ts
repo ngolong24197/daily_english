@@ -63,14 +63,14 @@ if (Platform.OS === 'web') {
   storage = createLocalStorageAPI();
 } else {
   try {
-    const { MMKV } = require('react-native-mmkv') as typeof import('react-native-mmkv');
-    const instance = new MMKV({ id: 'daily-english-storage' });
+    const { createMMKV } = require('react-native-mmkv') as typeof import('react-native-mmkv');
+    const instance = createMMKV({ id: 'daily-english-storage' });
     storage = {
       getString: (key) => instance.getString(key),
       getNumber: (key) => instance.getNumber(key),
       getBoolean: (key) => instance.getBoolean(key),
       set: (key, value) => instance.set(key, value),
-      delete: (key) => instance.delete(key),
+      delete: (key) => instance.remove(key),
       getAllKeys: () => instance.getAllKeys(),
       clearAll: () => instance.clearAll(),
     };

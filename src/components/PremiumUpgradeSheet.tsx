@@ -128,15 +128,15 @@ export default function PremiumUpgradeSheet({
 const styles = {
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)' as const,
-    justifyContent: 'flex-end' as const,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'flex-end',
   },
   sheetContent: {
     backgroundColor: colors.light.bg,
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     padding: spacing.lg,
-    maxHeight: '85%' as const,
+    maxHeight: '85%',
     paddingBottom: spacing['2xl'],
   },
   handle: {
@@ -144,12 +144,12 @@ const styles = {
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.light.border,
-    alignSelf: 'center' as const,
+    alignSelf: 'center',
     marginBottom: spacing.lg,
   },
   title: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight as const,
+    fontWeight: typography.heading.fontWeight,
     color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
@@ -165,8 +165,8 @@ const styles = {
     marginBottom: spacing.lg,
   },
   benefitRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.md,
   },
   benefitEmoji: {
@@ -177,7 +177,7 @@ const styles = {
   },
   benefitTitle: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontWeight: '600',
     color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
@@ -191,14 +191,14 @@ const styles = {
     backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.lg,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginBottom: spacing.lg,
     borderWidth: 1,
     borderColor: colors.light.primary,
   },
   pricingPrice: {
     fontSize: typography.heading.fontSize,
-    fontWeight: '700' as const,
+    fontWeight: '700',
     color: colors.light.primary,
     lineHeight: typography.heading.lineHeight,
   },
@@ -211,20 +211,20 @@ const styles = {
     backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
     marginBottom: spacing.sm,
   },
   ctaButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight as const,
+    fontWeight: typography.button.fontWeight,
     color: '#FFFFFF',
   },
   laterButton: {
     paddingVertical: spacing.md,
-    alignItems: 'center' as const,
+    alignItems: 'center',
   },
   laterButtonText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textSecondary,
   },
-};
+} as const;

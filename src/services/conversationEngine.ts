@@ -113,8 +113,10 @@ export function createConversation(mode: ModeCode = 'survival', sceneId?: string
         timestamp: Date.now(),
         wordsUsed: [],
       }],
-      currentStepIndex: 0,
+      currentStep: 0,
+      hintLevel: 0,
       isComplete: false,
+      wordsUsedThisSession: [],
     };
   }
   const firstNpcText = script[0].npcText;
