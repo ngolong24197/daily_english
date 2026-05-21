@@ -11,7 +11,8 @@
  */
 
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii, modeColors, type ThemeColors } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import type { AccuracyScore, DimensionScore } from '../services/accuracyScoring';
 
 interface ScoreCardProps {
@@ -25,24 +26,25 @@ export default function ScoreCard({
   onPracticeAgain,
   onContinueToDaily,
 }: ScoreCardProps) {
+  const { colors } = useTheme();
   const isIELTS = score.examType === 'ielts';
-  const accentColor = isIELTS ? '#3A6A8F' : '#8B6B3D';
+  const accentColor = isIELTS ? modeColors.ielts.accent : modeColors.toeic.accent;
 
   const scoreLabel = isIELTS ? 'Estimated IELTS Band' : 'Estimated TOEIC Score';
   const scoreUnit = isIELTS ? '' : ' points';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.contentContainer}>
       {/* Score Header */}
       <View style={styles.scoreHeader}>
-        <Text style={styles.scoreTitle}>Practice Complete</Text>
-        <Text style={styles.scoreSubtitle}>
+        <Text style={[styles.scoreTitle, { color: colors.textPrimary }]}>Practice Complete</Text>
+        <Text style={[styles.scoreSubtitle, { color: colors.textSecondary }]}>
           {isIELTS
             ? "Here's an estimate of how you might score on IELTS Speaking."
             : "Here's an estimate of how you might score on TOEIC Speaking."}
         </Text>
-        <View style={[styles.bandScoreCard, { borderColor: accentColor }]}>
-          <Text style={styles.bandScoreLabel}>{scoreLabel}</Text>
+        <View style={[styles.bandScoreCard, { borderColor: accentColor, backgroundColor: colors.surface }]}>
+          <Text style={[styles.bandScoreLabel, { color: colors.textSecondary }]}>{scoreLabel}</Text>
           <Text style={[styles.bandScoreValue, { color: accentColor }]}>
             {score.bandRange}{scoreUnit}
           </Text>
@@ -51,33 +53,37 @@ export default function ScoreCard({
 
       {/* Dimension Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Breakdown</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Breakdown</Text>
         <DimensionBar
           dimension={score.breakdown.vocabulary}
           accentColor={accentColor}
+          themeColors={colors}
         />
         <DimensionBar
           dimension={score.breakdown.grammar}
           accentColor={accentColor}
+          themeColors={colors}
         />
         <DimensionBar
           dimension={score.breakdown.fluency}
           accentColor={accentColor}
+          themeColors={colors}
         />
         <DimensionBar
           dimension={score.breakdown.relevance}
           accentColor={accentColor}
+          themeColors={colors}
         />
       </View>
 
       {/* Words Used Correctly */}
       {score.wordsUsedCorrectly.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Words you used well</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Words you used well</Text>
           <View style={styles.chipRow}>
             {score.wordsUsedCorrectly.map((word) => (
-              <View key={word} style={styles.wordChip}>
-                <Text style={styles.wordChipText}>{word}</Text>
+              <View key={word} style={[styles.wordChip, { backgroundColor: colors.primaryMedium }]}>
+                <Text style={[styles.wordChipText, { color: colors.primary }]}>{word}</Text>
               </View>
             ))}
           </View>
@@ -86,29 +92,29 @@ export default function ScoreCard({
 
       {/* Strengths */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>What you did well</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>What you did well</Text>
         {score.strengths.map((strength, index) => (
-          <View key={index} style={styles.feedbackCard}>
+          <View key={index} style={[styles.feedbackCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.feedbackIcon}>{'✅'}</Text>
-            <Text style={styles.feedbackText}>{strength}</Text>
+            <Text style={[styles.feedbackText, { color: colors.textPrimary }]}>{strength}</Text>
           </View>
         ))}
       </View>
 
       {/* Improvements */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Here's how to improve</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Here's how to improve</Text>
         {score.improvements.map((improvement, index) => (
-          <View key={index} style={[styles.feedbackCard, styles.improvementCard]}>
+          <View key={index} style={[styles.feedbackCard, styles.improvementCard, { backgroundColor: colors.secondaryLight, borderColor: colors.border }]}>
             <Text style={styles.feedbackIcon}>{'💡'}</Text>
-            <Text style={styles.feedbackText}>{improvement}</Text>
+            <Text style={[styles.feedbackText, { color: colors.textPrimary }]}>{improvement}</Text>
           </View>
         ))}
       </View>
 
       {/* Encouragement */}
-      <View style={styles.encouragementCard}>
-        <Text style={styles.encouragementText}>
+      <View style={[styles.encouragementCard, { backgroundColor: colors.primarySubtle }]}>
+        <Text style={[styles.encouragementText, { color: colors.primary }]}>
           Remember: this is an estimate, not an official score. Practice regularly and you will see improvement!
         </Text>
       </View>
@@ -121,7 +127,7 @@ export default function ScoreCard({
           accessibilityRole="button"
           accessibilityLabel="Practice again"
         >
-          <Text style={styles.primaryButtonText}>Practice again</Text>
+          <Text style={[styles.primaryButtonText, { color: colors.onPrimary }]}>Practice again</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.secondaryButton, { borderColor: accentColor }]}
@@ -143,24 +149,25 @@ export default function ScoreCard({
 interface DimensionBarProps {
   dimension: DimensionScore;
   accentColor: string;
+  themeColors: ThemeColors;
 }
 
-function DimensionBar({ dimension, accentColor }: DimensionBarProps) {
+function DimensionBar({ dimension, accentColor, themeColors }: DimensionBarProps) {
   const levelColors: Record<string, string> = {
-    Developing: '#C49564',
-    Competent: '#5B8C5A',
-    Strong: '#3A6A8F',
+    Developing: themeColors.secondary,
+    Competent: themeColors.primary,
+    Strong: modeColors.ielts.accent,
   };
 
   return (
     <View style={styles.dimensionRow}>
       <View style={styles.dimensionHeader}>
-        <Text style={styles.dimensionLabel}>{dimension.label}</Text>
+        <Text style={[styles.dimensionLabel, { color: themeColors.textPrimary }]}>{dimension.label}</Text>
         <Text style={[styles.dimensionLevel, { color: levelColors[dimension.level] ?? accentColor }]}>
           {dimension.level}
         </Text>
       </View>
-      <View style={styles.dimensionBarTrack}>
+      <View style={[styles.dimensionBarTrack, { backgroundColor: themeColors.border }]}>
         <View
           style={[
             styles.dimensionBarFill,
@@ -171,7 +178,7 @@ function DimensionBar({ dimension, accentColor }: DimensionBarProps) {
           ]}
         />
       </View>
-      <Text style={styles.dimensionComment}>{dimension.comment}</Text>
+      <Text style={[styles.dimensionComment, { color: themeColors.textSecondary }]}>{dimension.comment}</Text>
     </View>
   );
 }
@@ -181,7 +188,6 @@ function DimensionBar({ dimension, accentColor }: DimensionBarProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   contentContainer: {
     paddingHorizontal: spacing.md,
@@ -195,12 +201,10 @@ const styles = StyleSheet.create({
   scoreTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
   scoreSubtitle: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     marginTop: spacing.xs,
@@ -213,11 +217,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
     alignItems: 'center',
-    backgroundColor: colors.light.surface,
   },
   bandScoreLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     fontWeight: '500',
     marginBottom: spacing.xs,
   },
@@ -232,7 +234,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: typography.subheading.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
     marginBottom: spacing.sm,
   },
@@ -242,29 +243,25 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   wordChip: {
-    backgroundColor: 'rgba(91, 140, 90, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   wordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '500',
   },
   feedbackCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: spacing.sm,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   improvementCard: {
-    backgroundColor: 'rgba(212, 165, 116, 0.08)',
+    // backgroundColor and borderColor are set inline
   },
   feedbackIcon: {
     fontSize: 16,
@@ -272,12 +269,10 @@ const styles = StyleSheet.create({
   },
   feedbackText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
     flex: 1,
   },
   encouragementCard: {
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.md,
     padding: spacing.lg,
     marginTop: spacing.lg,
@@ -285,7 +280,6 @@ const styles = StyleSheet.create({
   },
   encouragementText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
   },
@@ -301,7 +295,6 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   secondaryButton: {
     borderRadius: radii.sm,
@@ -325,7 +318,6 @@ const styles = StyleSheet.create({
   dimensionLabel: {
     fontSize: typography.body.fontSize,
     fontWeight: '500',
-    color: colors.light.textPrimary,
   },
   dimensionLevel: {
     fontSize: typography.caption.fontSize,
@@ -333,7 +325,6 @@ const styles = StyleSheet.create({
   },
   dimensionBarTrack: {
     height: 6,
-    backgroundColor: colors.light.border,
     borderRadius: 3,
     overflow: 'hidden',
     marginBottom: spacing.xs,
@@ -344,7 +335,6 @@ const styles = StyleSheet.create({
   },
   dimensionComment: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
   },
 });

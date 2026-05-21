@@ -11,7 +11,8 @@
 
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { useEffect, useRef } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import type { RecordingState } from '../hooks/useAudioRecording';
 import { MicButtonLabels } from '../utils/accessibility';
 import { useHaptics } from '../hooks/useHaptics';
@@ -31,6 +32,7 @@ export default function MicButton({
   disabled = false,
   errorMessage,
 }: MicButtonProps) {
+  const { colors } = useTheme();
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,16 +134,16 @@ export default function MicButton({
   const getButtonColor = (): string => {
     switch (recordingState) {
       case 'recording':
-        return colors.light.primary;
+        return colors.primary;
       case 'processing':
-        return colors.light.secondary;
+        return colors.secondary;
       case 'error':
-        return colors.light.secondary;
+        return colors.secondary;
       case 'requesting_permission':
-        return colors.light.textMuted;
+        return colors.textMuted;
       case 'idle':
       default:
-        return colors.light.primary;
+        return colors.primary;
     }
   };
 
@@ -178,6 +180,7 @@ export default function MicButton({
               height: 64 + audioLevel * 32,
               borderRadius: (64 + audioLevel * 32) / 2,
               opacity: 0.15 + audioLevel * 0.25,
+              backgroundColor: colors.primary,
             },
           ]}
         />
@@ -197,7 +200,7 @@ export default function MicButton({
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: getButtonColor() },
+            { backgroundColor: getButtonColor(), shadowColor: colors.shadow },
             isDisabled && styles.buttonDisabled,
           ]}
           onPress={onPress}
@@ -206,12 +209,12 @@ export default function MicButton({
           accessibilityRole="button"
           activeOpacity={0.7}
         >
-          <Text style={styles.icon}>{getIconContent()}</Text>
+          <Text style={[styles.icon, { color: colors.onPrimary }]}>{getIconContent()}</Text>
         </TouchableOpacity>
       </Animated.View>
 
       {/* Label below button */}
-      <Text style={styles.label}>
+      <Text style={[styles.label, { color: colors.textMuted }]}>
         {recordingState === 'recording'
           ? 'Listening...'
           : recordingState === 'processing'
@@ -224,12 +227,12 @@ export default function MicButton({
       {/* "I'm done" button during recording */}
       {recordingState === 'recording' && (
         <TouchableOpacity
-          style={styles.doneButton}
+          style={[styles.doneButton, { backgroundColor: colors.secondary }]}
           onPress={onPress}
           accessibilityLabel="I'm done speaking"
           accessibilityRole="button"
         >
-          <Text style={styles.doneButtonText}>I'm done</Text>
+          <Text style={[styles.doneButtonText, { color: colors.textPrimary }]}>I'm done</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -246,7 +249,6 @@ const styles = StyleSheet.create({
   },
   audioGlow: {
     position: 'absolute' as const,
-    backgroundColor: colors.light.primary,
   },
   button: {
     width: 64,
@@ -254,7 +256,6 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -265,18 +266,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 28,
-    color: '#FFFFFF',
   },
   label: {
     fontSize: typography.micLabel.fontSize,
     fontWeight: typography.micLabel.fontWeight as any,
-    color: colors.light.textMuted,
     marginTop: spacing.xs,
     lineHeight: typography.micLabel.lineHeight,
   },
   doneButton: {
     marginTop: spacing.sm,
-    backgroundColor: colors.light.secondary,
     borderRadius: radii.full,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
@@ -284,6 +282,5 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '500' as any,
-    color: colors.light.textPrimary,
   },
 });

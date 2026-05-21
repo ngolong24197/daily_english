@@ -2,7 +2,9 @@ import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform
 import { useState, useCallback, useEffect } from 'react';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { modeColors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import { getSceneForMoodAndMode, preloadData } from '@/services/supabaseDataService';
 import { getAsrErrorMessage } from '@/services/asrService';
@@ -34,6 +36,7 @@ const PHRASES = [
 ];
 
 export default function CheckInRoute() {
+  const { colors } = useTheme();
   const [textResponse, setTextResponse] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
   const [asrMessage, setAsrMessage] = useState<string | null>(null);
@@ -162,29 +165,29 @@ export default function CheckInRoute() {
 
   if (isExamPractice) {
     const examType = currentMode === 'ielts' ? 'IELTS' : 'TOEIC';
-    const examAccentColor = currentMode === 'ielts' ? '#3A6A8F' : '#8B6B3D';
+    const examAccentColor = currentMode === 'ielts' ? modeColors.ielts.accent : modeColors.toeic.accent;
     const examDescription = currentMode === 'ielts'
       ? 'You will practice structured IELTS speaking tasks with accuracy feedback. The examiner will ask you questions and you respond naturally.'
       : 'You will practice structured TOEIC speaking tasks with accuracy feedback. You will respond to business English scenarios.';
 
     return (
-      <SafeAreaView style={s.container} edges={['bottom']}>
+      <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]} edges={['bottom']}>
         <AppHeader title={`${examType} Practice`} showBackButton />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.content}>
           <View style={s.trackLabel}>
-            <Text style={s.trackLabelText}>{modeLabel}</Text>
+            <Text style={[s.trackLabelText, { color: colors.textMuted }]}>{modeLabel}</Text>
             <Text style={[s.examModeLabel, { color: examAccentColor }]}>{examType} Practice</Text>
           </View>
 
           <View style={s.promptArea}>
-            <Text style={s.greeting}>{greeting}</Text>
-            <Text style={s.prompt}>{prompt}</Text>
-            <Text style={s.promptSub}>{promptSub}</Text>
+            <Text style={[s.greeting, { color: colors.textSecondary }]}>{greeting}</Text>
+            <Text style={[s.prompt, { color: colors.textPrimary }]}>{prompt}</Text>
+            <Text style={[s.promptSub, { color: colors.textSecondary }]}>{promptSub}</Text>
           </View>
 
-          <View style={s.examDescriptionCard}>
+          <View style={[s.examDescriptionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[s.examDescriptionTitle, { color: examAccentColor }]}>{examType} Speaking Practice</Text>
-            <Text style={s.examDescriptionText}>{examDescription}</Text>
+            <Text style={[s.examDescriptionText, { color: colors.textSecondary }]}>{examDescription}</Text>
           </View>
 
           <View style={s.examStartArea}>
@@ -194,9 +197,9 @@ export default function CheckInRoute() {
               accessibilityRole="button"
               accessibilityLabel="Begin practice"
             >
-              <Text style={s.examStartButtonText}>Begin Practice</Text>
+              <Text style={[s.examStartButtonText, { color: colors.onPrimary }]}>Begin Practice</Text>
             </TouchableOpacity>
-            <Text style={s.examStartSubtext}>You can switch to daily practice mode in Settings.</Text>
+            <Text style={[s.examStartSubtext, { color: colors.textMuted }]}>You can switch to daily practice mode in Settings.</Text>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -204,37 +207,47 @@ export default function CheckInRoute() {
   }
 
   return (
-    <SafeAreaView style={s.container} edges={['bottom']}>
+    <SafeAreaView style={[s.container, { backgroundColor: colors.bg }]} edges={['bottom']}>
       <AppHeader title="Daily English" showDrawerButton />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.content}>
         <View style={s.trackLabel}>
-          <Text style={s.trackLabelText}>{modeLabel}</Text>
-          {isExamModeFlag && <Text style={s.examModeLabel}>{'\u{1F4DD}'} Exam Mode</Text>}
+          <Text style={[s.trackLabelText, { color: colors.textMuted }]}>{modeLabel}</Text>
+          {isExamModeFlag && <Text style={[s.examModeLabel, { color: modeColors.professional.accent }]}>{'\u{1F4DD}'} Exam Mode</Text>}
         </View>
 
         {warmMessage && (
-          <View style={s.warmBanner}>
-            <Text style={s.warmBannerText}>{warmMessage}</Text>
+          <View style={[s.warmBanner, { backgroundColor: colors.primaryLight }]}>
+            <Text style={[s.warmBannerText, { color: colors.primary }]}>{warmMessage}</Text>
           </View>
         )}
 
         <Animated.View style={[s.promptArea, fadeIn, slideUp]}>
-          <Text style={s.greeting}>{greeting}</Text>
-          <Text style={s.prompt}>{prompt}</Text>
-          <Text style={s.promptSub}>{promptSub}</Text>
+          <Text style={[s.greeting, { color: colors.textSecondary }]}>{greeting}</Text>
+          <Text style={[s.prompt, { color: colors.textPrimary }]}>{prompt}</Text>
+          <Text style={[s.promptSub, { color: colors.textSecondary }]}>{promptSub}</Text>
         </Animated.View>
 
         <View style={s.emojiRow}>
           {MOODS.map((mood) => (
             <TouchableOpacity
               key={mood.key}
-              style={[s.emojiButton, selectedMood === mood.key && s.emojiButtonSelected]}
+              style={[
+                s.emojiButton,
+                {
+                  backgroundColor: selectedMood === mood.key ? colors.primarySubtle : colors.surface,
+                  borderColor: selectedMood === mood.key ? colors.primary : colors.border,
+                }
+              ]}
               onPress={() => handleMoodSelect(mood.key)}
               accessibilityLabel={MoodLabels[mood.key] ?? mood.label}
               accessibilityRole="button"
             >
               <Text style={s.emojiText}>{mood.emoji}</Text>
-              <Text style={[s.emojiLabel, selectedMood === mood.key && s.emojiLabelSelected]}>{mood.label}</Text>
+              <Text style={[
+                s.emojiLabel,
+                { color: selectedMood === mood.key ? colors.primary : colors.textMuted },
+                selectedMood === mood.key && s.emojiLabelSelected,
+              ]}>{mood.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -243,19 +256,25 @@ export default function CheckInRoute() {
           {PHRASES.map((phrase) => (
             <TouchableOpacity
               key={phrase}
-              style={[s.phraseChip, selectedPhrase === phrase && s.phraseChipSelected]}
+              style={[
+                s.phraseChip,
+                { backgroundColor: selectedPhrase === phrase ? colors.primary : colors.secondary }
+              ]}
               onPress={() => handlePhraseSelect(phrase)}
               accessibilityLabel={phraseLabel(phrase)}
               accessibilityRole="button"
             >
-              <Text style={[s.phraseChipText, selectedPhrase === phrase && s.phraseChipTextSelected]}>{phrase}</Text>
+              <Text style={[
+                s.phraseChipText,
+                { color: selectedPhrase === phrase ? colors.onPrimary : colors.textPrimary },
+              ]}>{phrase}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {asrMessage && (
-          <View style={s.asrBanner}>
-            <Text style={s.asrBannerText}>{asrMessage}</Text>
+          <View style={[s.asrBanner, { backgroundColor: colors.secondaryMedium }]}>
+            <Text style={[s.asrBannerText, { color: colors.textPrimary }]}>{asrMessage}</Text>
           </View>
         )}
 
@@ -266,17 +285,17 @@ export default function CheckInRoute() {
         {showTextInput ? (
           <View style={s.textInputArea}>
             <TextInput
-              style={s.textInput}
+              style={[s.textInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]}
               placeholder="Type how your day was..."
-              placeholderTextColor={colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={textResponse}
               onChangeText={setTextResponse}
               onSubmitEditing={handleTextSubmit}
               returnKeyType="send"
               autoFocus
             />
-            <TouchableOpacity style={s.sendButton} onPress={handleTextSubmit} accessibilityLabel="Send message" accessibilityRole="button">
-              <Text style={s.sendButtonText}>Send</Text>
+            <TouchableOpacity style={[s.sendButton, { backgroundColor: colors.primary }]} onPress={handleTextSubmit} accessibilityLabel="Send message" accessibilityRole="button">
+              <Text style={[s.sendButtonText, { color: colors.onPrimary }]}>Send</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -286,7 +305,7 @@ export default function CheckInRoute() {
             accessibilityLabel="Type your response instead"
             accessibilityRole="button"
           >
-            <Text style={s.typeInsteadText}>Or type your response</Text>
+            <Text style={[s.typeInsteadText, { color: colors.textMuted }]}>Or type your response</Text>
           </TouchableOpacity>
         )}
       </KeyboardAvoidingView>
@@ -297,7 +316,6 @@ export default function CheckInRoute() {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   content: {
     flex: 1,
@@ -312,19 +330,16 @@ const s = StyleSheet.create({
   },
   trackLabelText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
   },
   examModeLabel: {
     fontSize: typography.caption.fontSize,
-    color: '#4A7A9B',
     fontWeight: '600',
     marginTop: spacing.xs,
   },
   greeting: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '500',
-    color: colors.light.textSecondary,
     lineHeight: typography.subheading.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.xs,
@@ -336,14 +351,12 @@ const s = StyleSheet.create({
   prompt: {
     fontSize: typography.display.fontSize,
     fontWeight: typography.display.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.display.lineHeight,
     textAlign: 'center',
   },
   promptSub: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '400',
-    color: colors.light.textSecondary,
     lineHeight: typography.subheading.lineHeight,
     marginTop: spacing.xs,
     textAlign: 'center',
@@ -357,24 +370,16 @@ const s = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: radii.full,
-    backgroundColor: colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.light.border,
-  },
-  emojiButtonSelected: {
-    borderColor: colors.light.primary,
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
   },
   emojiText: { fontSize: 24 },
   emojiLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     marginTop: 2,
   },
   emojiLabelSelected: {
-    color: colors.light.primary,
     fontWeight: '600',
   },
   chipRow: {
@@ -385,20 +390,15 @@ const s = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   phraseChip: {
-    backgroundColor: colors.light.secondary,
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  phraseChipSelected: { backgroundColor: colors.light.primary },
   phraseChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
-  phraseChipTextSelected: { color: '#FFFFFF' },
   asrBanner: {
-    backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -407,7 +407,6 @@ const s = StyleSheet.create({
   },
   asrBannerText: {
     fontSize: typography.hint.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
     textAlign: 'center',
   },
@@ -420,17 +419,13 @@ const s = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   sendButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.md,
     paddingHorizontal: spacing.lg,
     justifyContent: 'center',
@@ -438,11 +433,9 @@ const s = StyleSheet.create({
   sendButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight as any,
-    color: '#FFFFFF',
   },
   typeInsteadButton: { paddingVertical: spacing.md },
   warmBanner: {
-    backgroundColor: 'rgba(91, 140, 90, 0.12)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -451,22 +444,18 @@ const s = StyleSheet.create({
   },
   warmBannerText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     fontWeight: '500',
   },
   typeInsteadText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textDecorationLine: 'underline',
   },
   examDescriptionCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.light.border,
     marginBottom: spacing.xl,
     width: '100%',
   },
@@ -478,7 +467,6 @@ const s = StyleSheet.create({
   },
   examDescriptionText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
   },
   examStartArea: { alignItems: 'center', width: '100%' },
@@ -492,11 +480,9 @@ const s = StyleSheet.create({
   examStartButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight as any,
-    color: '#FFFFFF',
   },
   examStartSubtext: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     marginTop: spacing.sm,
     textAlign: 'center',
   },

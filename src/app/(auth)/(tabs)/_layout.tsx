@@ -1,36 +1,40 @@
 import { Tabs } from 'expo-router/tabs';
 import { TouchableOpacity, Text } from 'react-native';
-import { colors, typography, spacing } from '@/constants/theme';
+import { typography, spacing } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useDrawer } from '@/contexts/DrawerContext';
 
 function DrawerButton() {
+  const { colors } = useTheme();
   const { open } = useDrawer();
   return (
     <TouchableOpacity onPress={open} style={{ marginLeft: spacing.md }} accessibilityRole="button" accessibilityLabel="Open menu">
-      <Text style={{ fontSize: 22, color: colors.light.textPrimary }}>{'☰'}</Text>
+      <Text style={{ fontSize: 22, color: colors.textPrimary }}>{'☰'}</Text>
     </TouchableOpacity>
   );
 }
 
 export default function TabsLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: colors.light.bg,
+          backgroundColor: colors.bg,
         },
-        headerTintColor: colors.light.textPrimary,
+        headerTintColor: colors.textPrimary,
         headerTitleStyle: {
           fontSize: typography.heading.fontSize,
           fontWeight: typography.heading.fontWeight as any,
         },
         headerLeft: () => <DrawerButton />,
-        tabBarActiveTintColor: colors.light.primary,
-        tabBarInactiveTintColor: colors.light.textMuted,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: colors.light.bg,
-          borderTopColor: colors.light.border,
+          backgroundColor: colors.bg,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           paddingBottom: spacing.xs,
           paddingTop: spacing.xs,

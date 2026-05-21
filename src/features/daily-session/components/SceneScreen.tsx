@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { modeColors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { MockWord } from '@/services/mockData';
 import { getModeBadgeColor, getModeBadgeLabel } from '@/services/wordService';
@@ -13,6 +15,7 @@ import { wordChipLabel } from '@/utils/accessibility';
 import WordExplorationSheet from '@/components/WordExplorationSheet';
 
 export default function SceneScreen() {
+  const { colors } = useTheme();
   const { currentScene, setCurrentStep, currentMode, contextChanges, isExamMode, setPracticeFormat, setJamAlongScriptId } = useSessionStore();
   const [selectedWord, setSelectedWord] = useState<MockWord | null>(null);
   const { fadeIn, slideUp, playEntrance } = useEntranceAnimation();
@@ -24,13 +27,13 @@ export default function SceneScreen() {
 
   if (!currentScene) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Something went wrong loading the scene.</Text>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>Something went wrong loading the scene.</Text>
         <TouchableOpacity
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.primary }]}
           onPress={() => { setCurrentStep('checkin'); router.push('/session/checkin'); }}
         >
-          <Text style={styles.backButtonText}>Go back</Text>
+          <Text style={[styles.backButtonText, { color: colors.onPrimary }]}>Go back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -43,16 +46,16 @@ export default function SceneScreen() {
   const dialogueParts = splitDialogueWithHighlights(currentScene.dialogueText, currentScene.newWords);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity
           onPress={() => { setCurrentStep('checkin'); router.push('/session/checkin'); }}
           accessibilityLabel="Go back to check-in"
           accessibilityRole="button"
         >
-          <Text style={styles.headerBack}>Back</Text>
+          <Text style={[styles.headerBack, { color: colors.primary }]}>Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Today's Scene</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Today's Scene</Text>
         <View style={{ width: 48 }} />
       </View>
 
@@ -66,16 +69,16 @@ export default function SceneScreen() {
             </Text>
           </View>
           {isExamMode && (
-            <View style={styles.examModeBadge}>
-              <Text style={styles.examModeBadgeText}>{'\u{1F4DD}'} Exam Mode</Text>
+            <View style={[styles.examModeBadge, { backgroundColor: colors.accentCoolLight }]}>
+              <Text style={[styles.examModeBadgeText, { color: modeColors.professional.accent }]}>{'\u{1F4DD}'} Exam Mode</Text>
             </View>
           )}
         </View>
 
-        <View style={styles.sceneCard}>
-          <View style={styles.illustrationArea}>
+        <View style={[styles.sceneCard, { backgroundColor: colors.surface }]}>
+          <View style={[styles.illustrationArea, { backgroundColor: colors.surfaceWarmAlt }]}>
             <Text style={styles.illustrationEmoji}>{'\u{2615}'}</Text>
-            <Text style={styles.illustrationLabel}>{currentScene.title}</Text>
+            <Text style={[styles.illustrationLabel, { color: colors.textSecondary }]}>{currentScene.title}</Text>
           </View>
 
           <View style={styles.dialogueArea}>
@@ -93,10 +96,10 @@ export default function SceneScreen() {
                       if (word) setSelectedWord(word);
                     }}
                   >
-                    <Text style={styles.highlightedWord}>{part.text}</Text>
+                    <Text style={[styles.highlightedWord, { color: colors.accentWarm }]}>{part.text}</Text>
                   </TouchableOpacity>
                 ) : (
-                  <Text key={index} style={styles.dialogueText}>
+                  <Text key={index} style={[styles.dialogueText, { color: colors.textPrimary }]}>
                     {part.text}
                   </Text>
                 )
@@ -106,19 +109,19 @@ export default function SceneScreen() {
         </View>
 
         <View style={styles.wordsSection}>
-          <Text style={styles.sectionTitle}>Words in this scene</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Words in this scene</Text>
           <View style={styles.chipRow}>
             {currentScene.newWords.map((word) => {
               const wordBadgeColors = getModeBadgeColor(modeCode);
               return (
                 <TouchableOpacity
                   key={word.id}
-                  style={styles.newWordChip}
+                  style={[styles.newWordChip, { backgroundColor: colors.secondaryMedium }]}
                   onPress={() => setSelectedWord(word)}
                   accessibilityLabel={wordChipLabel(word.lemma, word.pos ?? 'noun')}
                   accessibilityRole="button"
                 >
-                  <Text style={styles.newWordChipText}>{word.lemma}</Text>
+                  <Text style={[styles.newWordChipText, { color: colors.accentWarm }]}>{word.lemma}</Text>
                   <View style={[styles.modeDot, { backgroundColor: wordBadgeColors.text }]} />
                 </TouchableOpacity>
               );
@@ -128,7 +131,7 @@ export default function SceneScreen() {
 
         {currentScene.reviewWords.length > 0 && (
           <View style={styles.wordsSection}>
-            <Text style={styles.sectionTitle}>Old friends from before</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Old friends from before</Text>
             <View style={styles.reviewWordsContainer}>
               {currentScene.reviewWords.map((word) => {
                 const ctxChange = contextChanges[word.id];
@@ -136,17 +139,17 @@ export default function SceneScreen() {
                 return (
                   <TouchableOpacity
                     key={word.id}
-                    style={styles.reviewWordPill}
+                    style={[styles.reviewWordPill, { backgroundColor: colors.primarySubtle, borderColor: colors.primary }]}
                     onPress={() => setSelectedWord(word)}
                     accessibilityLabel={wordChipLabel(word.lemma, word.pos ?? 'noun')}
                     accessibilityRole="button"
                   >
                     <View style={styles.reviewWordChipInner}>
-                      <Text style={styles.reviewWordChipText}>{word.lemma}</Text>
+                      <Text style={[styles.reviewWordChipText, { color: colors.primary }]}>{word.lemma}</Text>
                       <View style={[styles.modeDot, { backgroundColor: wordBadgeColors.text }]} />
                     </View>
                     {ctxChange && (
-                      <Text style={styles.reviewWordContextChange} numberOfLines={1}>
+                      <Text style={[styles.reviewWordContextChange, { color: colors.accentWarm }]}>
                         {'\u{2728}'} New context
                       </Text>
                     )}
@@ -158,7 +161,7 @@ export default function SceneScreen() {
         )}
 
         <TouchableOpacity
-          style={styles.ctaButton}
+          style={[styles.ctaButton, { backgroundColor: colors.primary }]}
           onPress={() => {
             haptics.impactMedium();
             setPracticeFormat('conversation');
@@ -167,12 +170,12 @@ export default function SceneScreen() {
           accessibilityRole="button"
           accessibilityLabel="Step into the conversation"
         >
-          <Text style={styles.ctaButtonText}>Step into the conversation</Text>
+          <Text style={[styles.ctaButtonText, { color: colors.onPrimary }]}>Step into the conversation</Text>
         </TouchableOpacity>
 
         {!isExamMode && (
           <TouchableOpacity
-            style={styles.jamAlongButton}
+            style={[styles.jamAlongButton, { borderColor: colors.secondary, backgroundColor: colors.secondaryLight }]}
             onPress={() => {
               const script = getDefaultJamAlongScript(currentMode);
               setPracticeFormat('jamAlong');
@@ -183,7 +186,7 @@ export default function SceneScreen() {
             accessibilityLabel="Try Jam Along: fill in the gaps"
           >
             <Text style={styles.jamAlongIcon}>{'\u{1F3B5}'}</Text>
-            <Text style={styles.jamAlongButtonText}>Fill in (Jam Along)</Text>
+            <Text style={[styles.jamAlongButtonText, { color: colors.secondary }]}>Fill in (Jam Along)</Text>
           </TouchableOpacity>
         )}
         </Animated.View>
@@ -253,7 +256,6 @@ function splitDialogueWithHighlights(
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   header: {
     flexDirection: 'row',
@@ -262,17 +264,14 @@ const styles = {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
   },
   headerBack: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '600',
   },
   headerTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
   },
   scrollContent: {
     flex: 1,
@@ -283,7 +282,6 @@ const styles = {
   },
   errorText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
     marginTop: spacing['3xl'],
   },
@@ -291,11 +289,9 @@ const styles = {
     marginTop: spacing.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
   },
   backButtonText: {
-    color: '#FFFFFF',
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
   },
@@ -313,7 +309,6 @@ const styles = {
     fontWeight: '600',
   },
   examModeBadge: {
-    backgroundColor: 'rgba(126, 181, 214, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
@@ -323,17 +318,14 @@ const styles = {
   examModeBadgeText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: '#4A7A9B',
   },
   sceneCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
     overflow: 'hidden',
     marginTop: spacing.sm,
   },
   illustrationArea: {
     height: 200,
-    backgroundColor: '#F5EDE4',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -343,7 +335,6 @@ const styles = {
   illustrationLabel: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '500',
-    color: colors.light.textSecondary,
     marginTop: spacing.sm,
   },
   dialogueArea: {
@@ -355,12 +346,10 @@ const styles = {
   },
   dialogueText: {
     fontSize: typography.bodyLg.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.bodyLg.lineHeight,
   },
   highlightedWord: {
     fontSize: typography.bodyLg.fontSize,
-    color: colors.light.accentWarm,
     fontWeight: '600',
     textDecorationLine: 'underline',
     lineHeight: typography.bodyLg.lineHeight,
@@ -371,7 +360,6 @@ const styles = {
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: typography.subheading.fontWeight,
-    color: colors.light.textPrimary,
     marginBottom: spacing.sm,
   },
   chipRow: {
@@ -380,7 +368,6 @@ const styles = {
     gap: spacing.sm,
   },
   newWordChip: {
-    backgroundColor: 'rgba(232, 168, 124, 0.2)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -390,7 +377,6 @@ const styles = {
   },
   newWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.accentWarm,
     fontWeight: '500',
   },
   modeDot: {
@@ -404,12 +390,10 @@ const styles = {
     gap: spacing.sm,
   },
   reviewWordPill: {
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(91, 140, 90, 0.2)',
   },
   reviewWordChipInner: {
     flexDirection: 'row',
@@ -418,16 +402,13 @@ const styles = {
   },
   reviewWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '500',
   },
   reviewWordContextChange: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.accentWarm,
     marginTop: spacing.xs,
   },
   ctaButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
@@ -437,7 +418,6 @@ const styles = {
   ctaButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   jamAlongButton: {
     flexDirection: 'row',
@@ -449,8 +429,6 @@ const styles = {
     paddingHorizontal: spacing.lg,
     marginTop: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.secondary,
-    backgroundColor: 'rgba(212, 165, 116, 0.08)',
   },
   jamAlongIcon: {
     fontSize: 18,
@@ -458,6 +436,5 @@ const styles = {
   jamAlongButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: colors.light.secondary,
   },
 } as const;

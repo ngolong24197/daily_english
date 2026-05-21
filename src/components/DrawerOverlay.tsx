@@ -12,7 +12,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { subscriptionService } from '@/services/subscriptionService';
@@ -31,6 +32,7 @@ const DRAWER_ITEMS = [
 ];
 
 export default function DrawerOverlay() {
+  const { colors } = useTheme();
   const { isOpen, close } = useDrawer();
   const { resetSession, setCurrentStep, currentMode } = useSessionStore();
   const [streakCount, setStreakCount] = useState(streakService.getStreak());
@@ -102,30 +104,34 @@ export default function DrawerOverlay() {
       </Animated.View>
 
       {/* Drawer panel */}
-      <Animated.View style={[styles.drawerPanel, drawerAnim]}>
+      <Animated.View style={[styles.drawerPanel, drawerAnim, { backgroundColor: colors.bg }]}>
         <View style={styles.drawerHeader}>
-          <Text style={styles.drawerGreeting} accessibilityRole="header">
+          <Text style={[styles.drawerGreeting, { color: colors.textPrimary }]} accessibilityRole="header">
             {streakService.getWelcomeMessage()}
           </Text>
           {streakCount > 0 && (
             <View style={styles.streakRow}>
               <Text style={styles.streakEmoji}>{'\u{1F525}'}</Text>
-              <Text style={styles.streakText}>{streakMessage}</Text>
+              <Text style={[styles.streakText, { color: colors.secondary }]}>{streakMessage}</Text>
             </View>
           )}
           <View style={styles.drawerTrackRow}>
-            <View style={styles.trackBadge}>
-              <Text style={styles.trackBadgeText}>
+            <View style={[styles.trackBadge, { backgroundColor: colors.primaryMedium }]}>
+              <Text style={[styles.trackBadgeText, { color: colors.primary }]}>
                 {modeLabels[currentMode] ?? 'Survival'}
               </Text>
             </View>
             <View style={[
               styles.tierBadge,
-              isPremium ? styles.tierBadgePremium : styles.tierBadgeFree,
+              isPremium
+                ? [styles.tierBadgePremium, { backgroundColor: colors.primaryMedium }]
+                : [styles.tierBadgeFree, { backgroundColor: colors.surface, borderColor: colors.border }],
             ]}>
               <Text style={[
                 styles.tierBadgeText,
-                isPremium ? styles.tierBadgeTextPremium : styles.tierBadgeTextFree,
+                isPremium
+                  ? { color: colors.primary }
+                  : { color: colors.textSecondary },
               ]}>
                 {isPremium ? 'Premium' : 'Free'}
               </Text>
@@ -133,11 +139,11 @@ export default function DrawerOverlay() {
           </View>
         </View>
 
-        <View style={styles.drawerDivider} />
+        <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
 
         {warmMessage && (
-          <View style={styles.warmBanner}>
-            <Text style={styles.warmBannerText}>{warmMessage}</Text>
+          <View style={[styles.warmBanner, { backgroundColor: colors.primaryLight }]}>
+            <Text style={[styles.warmBannerText, { color: colors.primary }]}>{warmMessage}</Text>
           </View>
         )}
 
@@ -149,30 +155,30 @@ export default function DrawerOverlay() {
             accessibilityLabel={NavigationLabels[item.route] ?? item.label}
             accessibilityRole="button"
           >
-            <Text style={styles.drawerItemText}>{item.label}</Text>
+            <Text style={[styles.drawerItemText, { color: colors.textPrimary }]}>{item.label}</Text>
           </TouchableOpacity>
         ))}
 
-        <View style={styles.drawerDivider} />
+        <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
 
         {!isPremium && (
           <TouchableOpacity
-            style={styles.upgradeBanner}
+            style={[styles.upgradeBanner, { backgroundColor: colors.surface, borderColor: colors.secondary }]}
             onPress={() => { close(); router.push('/settings' as any); }}
             accessibilityRole="button"
             accessibilityLabel="Upgrade to Premium"
           >
             <Text style={styles.upgradeBannerEmoji}>{'\u{1F680}'}</Text>
             <View style={styles.upgradeBannerText}>
-              <Text style={styles.upgradeBannerTitle}>Go Premium</Text>
-              <Text style={styles.upgradeBannerDesc}>All tracks, full history, no ads</Text>
+              <Text style={[styles.upgradeBannerTitle, { color: colors.textPrimary }]}>Go Premium</Text>
+              <Text style={[styles.upgradeBannerDesc, { color: colors.textSecondary }]}>All tracks, full history, no ads</Text>
             </View>
-            <Text style={styles.upgradeBannerArrow}>{'>'}</Text>
+            <Text style={[styles.upgradeBannerArrow, { color: colors.textMuted }]}>{'>'}</Text>
           </TouchableOpacity>
         )}
 
         <View style={styles.drawerFooter}>
-          <Text style={styles.drawerFooterText}>Daily English v{APP_CONFIG.version}</Text>
+          <Text style={[styles.drawerFooterText, { color: colors.textMuted }]}>Daily English v{APP_CONFIG.version}</Text>
         </View>
       </Animated.View>
     </>
@@ -190,7 +196,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: 280,
-    backgroundColor: colors.light.bg,
     shadowColor: '#000',
     shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.25,
@@ -205,7 +210,6 @@ const styles = StyleSheet.create({
   drawerGreeting: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
   streakRow: {
@@ -220,7 +224,6 @@ const styles = StyleSheet.create({
   streakText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '500',
-    color: colors.light.secondary,
     lineHeight: typography.caption.lineHeight,
   },
   drawerTrackRow: {
@@ -230,7 +233,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   trackBadge: {
-    backgroundColor: 'rgba(91, 140, 90, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
@@ -238,7 +240,6 @@ const styles = StyleSheet.create({
   trackBadgeText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
   },
   tierBadge: {
     borderRadius: radii.full,
@@ -246,30 +247,23 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   tierBadgeFree: {
-    backgroundColor: colors.light.surface,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   tierBadgePremium: {
-    backgroundColor: 'rgba(91, 140, 90, 0.15)',
   },
   tierBadgeText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
   },
   tierBadgeTextFree: {
-    color: colors.light.textSecondary,
   },
   tierBadgeTextPremium: {
-    color: colors.light.primary,
   },
   drawerDivider: {
     height: 1,
-    backgroundColor: colors.light.border,
     marginVertical: spacing.sm,
   },
   warmBanner: {
-    backgroundColor: 'rgba(91, 140, 90, 0.12)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -277,7 +271,6 @@ const styles = StyleSheet.create({
   },
   warmBannerText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.primary,
     lineHeight: typography.caption.lineHeight,
     textAlign: 'center' as any,
     fontWeight: '500' as any,
@@ -288,18 +281,15 @@ const styles = StyleSheet.create({
   drawerItemText: {
     fontSize: typography.body.fontSize,
     fontWeight: '400' as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   upgradeBanner: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.secondary,
     marginTop: spacing.sm,
   },
   upgradeBannerEmoji: {
@@ -311,18 +301,15 @@ const styles = StyleSheet.create({
   upgradeBannerTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   upgradeBannerDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   upgradeBannerArrow: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '600',
   },
   drawerFooter: {
@@ -331,7 +318,6 @@ const styles = StyleSheet.create({
   },
   drawerFooterText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textAlign: 'center',
   },
 });

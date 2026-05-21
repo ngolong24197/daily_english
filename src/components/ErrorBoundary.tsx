@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Props {
   children: ReactNode;
@@ -9,6 +10,23 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+}
+
+function ErrorView({ onRestart }: { onRestart: () => void }) {
+  const { colors } = useTheme();
+
+  return (
+    <View style={[s.container, { backgroundColor: colors.bg }]}>
+      <Text style={s.emoji}>{'\u{1F41B}'}</Text>
+      <Text style={[s.title, { color: colors.textPrimary }]}>Something went wrong</Text>
+      <Text style={[s.message, { color: colors.textSecondary }]}>
+        The app encountered an unexpected error. Please try again.
+      </Text>
+      <TouchableOpacity style={[s.button, { backgroundColor: colors.primary }]} onPress={onRestart} accessibilityRole="button" accessibilityLabel="Try again">
+        <Text style={[s.buttonText, { color: colors.onPrimary }]}>Try Again</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -24,18 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <View style={s.container}>
-          <Text style={s.emoji}>{'\u{1F41B}'}</Text>
-          <Text style={s.title}>Something went wrong</Text>
-          <Text style={s.message}>
-            The app encountered an unexpected error. Please try again.
-          </Text>
-          <TouchableOpacity style={s.button} onPress={this.handleRestart} accessibilityRole="button" accessibilityLabel="Try again">
-            <Text style={s.buttonText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
-      );
+      return <ErrorView onRestart={this.handleRestart} />;
     }
 
     return this.props.children;
@@ -47,7 +54,6 @@ const s = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.light.bg,
     paddingHorizontal: spacing.lg,
   },
   emoji: {
@@ -57,19 +63,16 @@ const s = StyleSheet.create({
   title: {
     fontSize: typography.heading.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   message: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.xl,
     lineHeight: typography.body.lineHeight,
   },
   button: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.md,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -77,6 +80,5 @@ const s = StyleSheet.create({
   buttonText: {
     fontSize: typography.button.fontSize,
     fontWeight: '600',
-    color: '#FFFFFF',
   },
 });

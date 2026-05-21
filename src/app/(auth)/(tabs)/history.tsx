@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii, type ThemeColors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore, type CompletedSession } from '@/stores/sessionStore';
 import { getModeBadgeColor, getModeBadgeLabel } from '@/services/wordService';
 import { subscriptionService } from '@/services/subscriptionService';
@@ -8,6 +9,7 @@ import { useEntranceAnimation } from '@/hooks/useEntranceAnimation';
 import { HistoryEmptyState } from '@/components/SkeletonScreens';
 
 export default function HistoryScreen() {
+  const { colors } = useTheme();
   const { completedSessions } = useSessionStore();
   const [selectedSession, setSelectedSession] = useState<CompletedSession | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -24,37 +26,37 @@ export default function HistoryScreen() {
   // Empty state
   if (completedSessions.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <HistoryEmptyState />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View style={[fadeIn, slideUp]}>
-        <Text style={styles.headerTitle}>Conversation History</Text>
-        <Text style={styles.headerSub}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Conversation History</Text>
+        <Text style={[styles.headerSub, { color: colors.textSecondary }]}>
           {visibleSessions.length} conversation{visibleSessions.length !== 1 ? 's' : ''}
         </Text>
 
         {/* Upgrade card for free users with older sessions */}
         {!isPremium && hasOlderSessions && (
           <TouchableOpacity
-            style={styles.upgradeCard}
+            style={[styles.upgradeCard, { backgroundColor: colors.surface, borderColor: colors.secondary }]}
             onPress={() => setShowUpgrade(true)}
             accessibilityRole="button"
             accessibilityLabel="Upgrade to see your full history"
           >
             <Text style={styles.upgradeEmoji}>{'\u{1F512}'}</Text>
             <View style={styles.upgradeText}>
-              <Text style={styles.upgradeTitle}>Older conversations locked</Text>
-              <Text style={styles.upgradeDesc}>
+              <Text style={[styles.upgradeTitle, { color: colors.textPrimary }]}>Older conversations locked</Text>
+              <Text style={[styles.upgradeDesc, { color: colors.textSecondary }]}>
                 Upgrade to see your full history beyond 7 days.
               </Text>
             </View>
-            <Text style={styles.upgradeArrow}>{'>'}</Text>
+            <Text style={[styles.upgradeArrow, { color: colors.textMuted }]}>{'>'}</Text>
           </TouchableOpacity>
         )}
 
@@ -78,15 +80,15 @@ export default function HistoryScreen() {
           return (
             <TouchableOpacity
               key={session.id}
-              style={styles.sessionCard}
+              style={[styles.sessionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={() => setSelectedSession(session)}
               accessibilityLabel={`Conversation from ${dateStr}, ${sentenceCount} sentences`}
               accessibilityRole="button"
             >
               <View style={styles.sessionCardHeader}>
                 <View style={styles.sessionDateRow}>
-                  <Text style={styles.sessionDate}>{dateStr}</Text>
-                  <Text style={styles.sessionTime}>{timeStr}</Text>
+                  <Text style={[styles.sessionDate, { color: colors.textMuted }]}>{dateStr}</Text>
+                  <Text style={[styles.sessionTime, { color: colors.textMuted }]}>{timeStr}</Text>
                 </View>
                 <View style={[styles.modeBadge, { backgroundColor: modeBadgeColors.bg }]}>
                   <Text style={[styles.modeBadgeText, { color: modeBadgeColors.text }]}>
@@ -94,16 +96,16 @@ export default function HistoryScreen() {
                   </Text>
                 </View>
               </View>
-              <Text style={styles.sessionContext}>{session.sceneTitle}</Text>
-              <Text style={styles.sessionPreview} numberOfLines={2}>
+              <Text style={[styles.sessionContext, { color: colors.textPrimary }]}>{session.sceneTitle}</Text>
+              <Text style={[styles.sessionPreview, { color: colors.textSecondary }]} numberOfLines={2}>
                 {"“"}{firstSentence}{"”"}
               </Text>
               <View style={styles.sessionMetaRow}>
-                <Text style={styles.sessionMeta}>
+                <Text style={[styles.sessionMeta, { color: colors.textMuted }]}>
                   {sentenceCount} sentence{sentenceCount !== 1 ? 's' : ''}
                 </Text>
-                <Text style={styles.sessionMetaDot}>{'·'}</Text>
-                <Text style={styles.sessionMeta}>
+                <Text style={[styles.sessionMetaDot, { color: colors.textMuted }]}>{'·'}</Text>
+                <Text style={[styles.sessionMeta, { color: colors.textMuted }]}>
                   {wordCount} word{wordCount !== 1 ? 's' : ''}
                 </Text>
               </View>
@@ -117,11 +119,12 @@ export default function HistoryScreen() {
       <SessionDetailModal
         session={selectedSession}
         onClose={() => setSelectedSession(null)}
+        themeColors={colors}
       />
 
       {/* Upgrade Prompt (for free users) */}
       {!isPremium && showUpgrade && (
-        <UpgradePromptOverlay onClose={() => setShowUpgrade(false)} />
+        <UpgradePromptOverlay onClose={() => setShowUpgrade(false)} themeColors={colors} />
       )}
     </View>
   );
@@ -130,9 +133,11 @@ export default function HistoryScreen() {
 function SessionDetailModal({
   session,
   onClose,
+  themeColors,
 }: {
   session: CompletedSession | null;
   onClose: () => void;
+  themeColors: ThemeColors;
 }) {
   if (!session) return null;
 
@@ -153,12 +158,12 @@ function SessionDetailModal({
       transparent
       onRequestClose={onClose}
     >
-      <Pressable style={detailStyles.overlay} onPress={onClose}>
-        <Pressable style={detailStyles.sheetContent} onPress={() => {}}>
-          <View style={detailStyles.handle} />
+      <Pressable style={[detailStyles.overlay, { backgroundColor: 'rgba(0, 0, 0, 0.3)' }]} onPress={onClose}>
+        <Pressable style={[detailStyles.sheetContent, { backgroundColor: themeColors.bg }]} onPress={() => {}}>
+          <View style={[detailStyles.handle, { backgroundColor: themeColors.border }]} />
 
-          <Text style={detailStyles.title}>{session.sceneTitle}</Text>
-          <Text style={detailStyles.date}>{dateStr}</Text>
+          <Text style={[detailStyles.title, { color: themeColors.textPrimary }]}>{session.sceneTitle}</Text>
+          <Text style={[detailStyles.date, { color: themeColors.textMuted }]}>{dateStr}</Text>
 
           {/* Mode badge */}
           <View style={[detailStyles.modeBadge, { backgroundColor: modeBadgeColors.bg }]}>
@@ -170,16 +175,16 @@ function SessionDetailModal({
           {/* Words learned */}
           {((session.newWords ?? []).length > 0 || (session.reviewWords ?? []).length > 0) && (
             <View style={detailStyles.section}>
-              <Text style={detailStyles.sectionTitle}>Words this session</Text>
+              <Text style={[detailStyles.sectionTitle, { color: themeColors.textPrimary }]}>Words this session</Text>
               <View style={detailStyles.wordChips}>
                 {(session.newWords ?? []).map((w) => (
-                  <View key={w.id} style={detailStyles.newWordChip}>
-                    <Text style={detailStyles.newWordChipText}>{w.lemma}</Text>
+                  <View key={w.id} style={[detailStyles.newWordChip, { backgroundColor: themeColors.secondaryMedium }]}>
+                    <Text style={[detailStyles.newWordChipText, { color: themeColors.accentWarm }]}>{w.lemma}</Text>
                   </View>
                 ))}
                 {(session.reviewWords ?? []).map((w) => (
-                  <View key={w.id} style={detailStyles.reviewWordChip}>
-                    <Text style={detailStyles.reviewWordChipText}>{w.lemma}</Text>
+                  <View key={w.id} style={[detailStyles.reviewWordChip, { backgroundColor: themeColors.primaryMedium }]}>
+                    <Text style={[detailStyles.reviewWordChipText, { color: themeColors.primary }]}>{w.lemma}</Text>
                   </View>
                 ))}
               </View>
@@ -187,29 +192,31 @@ function SessionDetailModal({
           )}
 
           {/* Full dialogue */}
-          <Text style={detailStyles.sectionTitle}>Conversation</Text>
+          <Text style={[detailStyles.sectionTitle, { color: themeColors.textPrimary }]}>Conversation</Text>
           <ScrollView style={detailStyles.dialogueScroll}>
             {(session.messages ?? []).map((msg, idx) => (
               <View
                 key={idx}
                 style={[
                   detailStyles.messageBubble,
-                  msg.speaker === 'user' ? detailStyles.userBubble : detailStyles.partnerBubble,
+                  msg.speaker === 'user'
+                    ? [detailStyles.userBubble, { backgroundColor: themeColors.conversationUser, borderLeftColor: themeColors.primary }]
+                    : [detailStyles.partnerBubble, { backgroundColor: themeColors.conversationPartner }],
                 ]}
               >
-                <Text style={detailStyles.messageText}>{msg.text}</Text>
+                <Text style={[detailStyles.messageText, { color: themeColors.textPrimary }]}>{msg.text}</Text>
               </View>
             ))}
           </ScrollView>
 
           {/* Close */}
           <TouchableOpacity
-            style={detailStyles.closeButton}
+            style={[detailStyles.closeButton, { backgroundColor: themeColors.primary }]}
             onPress={onClose}
             accessibilityRole="button"
             accessibilityLabel="Close"
           >
-            <Text style={detailStyles.closeButtonText}>Close</Text>
+            <Text style={[detailStyles.closeButtonText, { color: themeColors.onPrimary }]}>Close</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -217,7 +224,7 @@ function SessionDetailModal({
   );
 }
 
-function UpgradePromptOverlay({ onClose }: { onClose: () => void }) {
+function UpgradePromptOverlay({ onClose, themeColors }: { onClose: () => void; themeColors: ThemeColors }) {
   return (
     <Modal
       visible
@@ -225,21 +232,21 @@ function UpgradePromptOverlay({ onClose }: { onClose: () => void }) {
       transparent
       onRequestClose={onClose}
     >
-      <Pressable style={upgradeStyles.overlay} onPress={onClose}>
-        <Pressable style={upgradeStyles.card} onPress={() => {}}>
+      <Pressable style={[upgradeStyles.overlay, { backgroundColor: 'rgba(0, 0, 0, 0.4)' }]} onPress={onClose}>
+        <Pressable style={[upgradeStyles.card, { backgroundColor: themeColors.bg }]} onPress={() => {}}>
           <Text style={upgradeStyles.emoji}>{'\u{1F680}'}</Text>
-          <Text style={upgradeStyles.title}>Unlock Full History</Text>
-          <Text style={upgradeStyles.description}>
+          <Text style={[upgradeStyles.title, { color: themeColors.textPrimary }]}>Unlock Full History</Text>
+          <Text style={[upgradeStyles.description, { color: themeColors.textSecondary }]}>
             Premium members can look back at every conversation they have ever had.
             Upgrade to see your full history, plus all tracks, detailed stats, and no ads.
           </Text>
           <TouchableOpacity
-            style={upgradeStyles.button}
+            style={[upgradeStyles.button, { backgroundColor: themeColors.primary }]}
             onPress={onClose}
             accessibilityRole="button"
             accessibilityLabel="Upgrade to Premium"
           >
-            <Text style={upgradeStyles.buttonText}>Upgrade to Premium</Text>
+            <Text style={[upgradeStyles.buttonText, { color: themeColors.onPrimary }]}>Upgrade to Premium</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={upgradeStyles.laterButton}
@@ -247,7 +254,7 @@ function UpgradePromptOverlay({ onClose }: { onClose: () => void }) {
             accessibilityRole="button"
             accessibilityLabel="Maybe later"
           >
-            <Text style={upgradeStyles.laterButtonText}>Maybe later</Text>
+            <Text style={[upgradeStyles.laterButtonText, { color: themeColors.textSecondary }]}>Maybe later</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -258,7 +265,6 @@ function UpgradePromptOverlay({ onClose }: { onClose: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   content: {
     paddingHorizontal: spacing.md,
@@ -277,13 +283,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: '500',
-    color: colors.light.textPrimary,
     textAlign: 'center',
     lineHeight: typography.heading.lineHeight,
   },
   emptySub: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.sm,
     textAlign: 'center',
     lineHeight: typography.body.lineHeight,
@@ -291,26 +295,22 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
     marginTop: spacing.md,
   },
   headerSub: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     marginTop: spacing.xs,
     marginBottom: spacing.md,
   },
   upgradeCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.secondary,
     marginBottom: spacing.md,
   },
   upgradeEmoji: {
@@ -322,27 +322,22 @@ const styles = StyleSheet.create({
   upgradeTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   upgradeDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   upgradeArrow: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '600',
   },
   sessionCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     marginTop: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   sessionCardHeader: {
     flexDirection: 'row',
@@ -355,12 +350,10 @@ const styles = StyleSheet.create({
   },
   sessionDate: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
   },
   sessionTime: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
   },
   modeBadge: {
@@ -375,13 +368,11 @@ const styles = StyleSheet.create({
   sessionContext: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   sessionPreview: {
     fontSize: typography.body.fontSize,
     fontStyle: 'italic',
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     marginTop: spacing.xs,
   },
@@ -393,23 +384,19 @@ const styles = StyleSheet.create({
   },
   sessionMeta: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
   },
   sessionMetaDot: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
   },
 });
 
 const detailStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'flex-end',
   },
   sheetContent: {
-    backgroundColor: colors.light.bg,
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     padding: spacing.lg,
@@ -420,19 +407,16 @@ const detailStyles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.light.border,
     alignSelf: 'center',
     marginBottom: spacing.lg,
   },
   title: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
   date: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
     marginTop: spacing.xs,
   },
@@ -453,7 +437,6 @@ const detailStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: typography.subheading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
@@ -464,25 +447,21 @@ const detailStyles = StyleSheet.create({
     gap: spacing.sm,
   },
   newWordChip: {
-    backgroundColor: 'rgba(232, 168, 124, 0.2)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   newWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.accentWarm,
     fontWeight: '500',
   },
   reviewWordChip: {
-    backgroundColor: 'rgba(91, 140, 90, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
   reviewWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '500',
   },
   dialogueScroll: {
@@ -495,22 +474,17 @@ const detailStyles = StyleSheet.create({
     maxWidth: '85%',
   },
   userBubble: {
-    backgroundColor: colors.light.conversationUser,
     alignSelf: 'flex-end',
     borderLeftWidth: 3,
-    borderLeftColor: colors.light.primary,
   },
   partnerBubble: {
-    backgroundColor: colors.light.conversationPartner,
     alignSelf: 'flex-start',
   },
   messageText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   closeButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -519,20 +493,17 @@ const detailStyles = StyleSheet.create({
   closeButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight as any,
-    color: '#FFFFFF',
   },
 });
 
 const upgradeStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
   },
   card: {
-    backgroundColor: colors.light.bg,
     borderRadius: radii.lg,
     padding: spacing.xl,
     alignItems: 'center',
@@ -546,20 +517,17 @@ const upgradeStyles = StyleSheet.create({
   title: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
     textAlign: 'center',
   },
   description: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     marginTop: spacing.sm,
     marginBottom: spacing.lg,
   },
   button: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -569,7 +537,6 @@ const upgradeStyles = StyleSheet.create({
   buttonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight as any,
-    color: '#FFFFFF',
   },
   laterButton: {
     marginTop: spacing.md,
@@ -577,6 +544,5 @@ const upgradeStyles = StyleSheet.create({
   },
   laterButtonText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
   },
 });

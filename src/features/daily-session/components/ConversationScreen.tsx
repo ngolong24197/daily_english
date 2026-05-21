@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { modeColors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import {
   createConversation,
@@ -32,6 +34,7 @@ import TempoPractice, { getTempoConfig } from '@/components/TempoPractice';
 import type { MockWord } from '@/services/mockData';
 
 export default function ConversationScreen() {
+  const { colors } = useTheme();
   const {
     currentScene,
     setCurrentStep,
@@ -233,10 +236,10 @@ export default function ConversationScreen() {
 
   if (!currentScene) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Something went wrong.</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => { setCurrentStep('scene'); router.push('/session/scene'); }}>
-          <Text style={styles.backBtnText}>Go back</Text>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>Something went wrong.</Text>
+        <TouchableOpacity style={[styles.backBtn, { backgroundColor: colors.primary }]} onPress={() => { setCurrentStep('scene'); router.push('/session/scene'); }}>
+          <Text style={[styles.backBtnText, { color: colors.onPrimary }]}>Go back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -253,22 +256,24 @@ export default function ConversationScreen() {
         ]}
       >
         {!isUser && (
-          <View style={styles.avatar}>
+          <View style={[styles.avatar, { backgroundColor: colors.conversationPartner }]}>
             <Text style={styles.avatarText}>{'\u{1F4AC}'}</Text>
           </View>
         )}
         <View
           style={[
             styles.messageBubble,
-            isUser ? styles.messageBubbleUser : styles.messageBubblePartner,
+            isUser
+              ? [styles.messageBubbleUser, { backgroundColor: colors.conversationUser }]
+              : [styles.messageBubblePartner, { backgroundColor: colors.conversationPartner }],
           ]}
         >
-          <Text style={[styles.messageText, isUser && styles.messageTextUser]}>
+          <Text style={[styles.messageText, isUser ? [styles.messageTextUser, { color: colors.textPrimary }] : { color: colors.textPrimary }]}>
             {message.text}
           </Text>
         </View>
         {isUser && (
-          <Text style={styles.youLabel}>You</Text>
+          <Text style={[styles.youLabel, { color: colors.textMuted }]}>You</Text>
         )}
       </View>
     );
@@ -290,29 +295,29 @@ export default function ConversationScreen() {
   const conversationContent = (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.bg }]}
     >
       {/* Microphone permission banner */}
       {showMicPermissionBanner && (
         <TouchableOpacity
-          style={styles.permissionBanner}
+          style={[styles.permissionBanner, { backgroundColor: colors.secondary }]}
           onPress={() => {}}
           accessibilityLabel="Speaking practice requires microphone access. Tap here to enable."
           accessibilityRole="button"
         >
-          <Text style={styles.permissionBannerText}>
+          <Text style={[styles.permissionBannerText, { color: colors.textPrimary }]}>
             Speaking practice requires microphone access. Tap here to enable.
           </Text>
         </TouchableOpacity>
       )}
 
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.headerLeft}>
-          <Text style={styles.sceneLabel}>{currentScene.title}</Text>
+          <Text style={[styles.sceneLabel, { color: colors.textSecondary }]}>{currentScene.title}</Text>
           {!isExamMode && <TempoPractice visible={true} />}
         </View>
         <TouchableOpacity
-          style={[styles.headerHintButton, hintGlow && styles.headerHintButtonGlow]}
+          style={[styles.headerHintButton, hintGlow ? [styles.headerHintButtonGlow, { borderColor: colors.primary, backgroundColor: colors.primarySubtle }] : [styles.headerHintButton, { borderColor: colors.border }]]}
           onPress={handleHintPress}
           accessibilityLabel="Get a hint"
           accessibilityRole="button"
@@ -334,9 +339,9 @@ export default function ConversationScreen() {
             return (
               <View key={message.id}>
                 {rendered}
-                <View style={styles.contextChangeBanner}>
+                <View style={[styles.contextChangeBanner, { backgroundColor: colors.secondaryMedium }]}>
                   <Text style={styles.contextChangeEmoji}>{'\u{2728}'}</Text>
-                  <Text style={styles.contextChangeText}>{message.contextChange}</Text>
+                  <Text style={[styles.contextChangeText, { color: colors.accentWarm }]}>{message.contextChange}</Text>
                 </View>
               </View>
             );
@@ -346,30 +351,30 @@ export default function ConversationScreen() {
 
         {engineState.isComplete && (
           <View style={styles.completeIndicator}>
-            <Text style={styles.completeText}>Great talking with you!</Text>
+            <Text style={[styles.completeText, { color: colors.primary }]}>Great talking with you!</Text>
           </View>
         )}
       </ScrollView>
 
       {/* ASR status message */}
       {asrStatusMessage && (
-        <View style={styles.asrStatusBanner}>
-          <Text style={styles.asrStatusText}>{asrStatusMessage}</Text>
+        <View style={[styles.asrStatusBanner, { backgroundColor: colors.secondaryMedium }]}>
+          <Text style={[styles.asrStatusText, { color: colors.textPrimary }]}>{asrStatusMessage}</Text>
         </View>
       )}
 
       {/* Exam accuracy hint */}
       {examHint && isExamMode && (
-        <View style={styles.examHintBanner}>
+        <View style={[styles.examHintBanner, { backgroundColor: modeColors[currentMode as keyof typeof modeColors]?.accentLight ?? modeColors.survival.accentLight }]}>
           <Text style={styles.examHintIcon}>{'\u{1F4DD}'}</Text>
-          <Text style={styles.examHintText}>{examHint}</Text>
+          <Text style={[styles.examHintText, { color: modeColors[currentMode as keyof typeof modeColors]?.accent ?? modeColors.survival.accent }]}>{examHint}</Text>
         </View>
       )}
 
       {/* Hint bar */}
       {showHint && (
-        <View style={styles.hintBar}>
-          <Text style={styles.hintBarText}>
+        <View style={[styles.hintBar, { backgroundColor: colors.secondary }]}>
+          <Text style={[styles.hintBarText, { color: colors.textPrimary }]}>
             {currentHint ?? 'Take your time...'}
           </Text>
         </View>
@@ -377,20 +382,20 @@ export default function ConversationScreen() {
 
       {/* Input area */}
       {!engineState.isComplete && (
-        <View style={styles.inputArea}>
+        <View style={[styles.inputArea, { borderTopColor: colors.border, backgroundColor: colors.bg }]}>
           {shouldShowTextInput ? (
             <View style={styles.textInputArea}>
               {isSpeechPrimary === false && asrFailureCount >= 3 && (
-                <Text style={styles.fallbackMessage}>
+                <Text style={[styles.fallbackMessage, { color: colors.textSecondary }]}>
                   I'll use text for now. We can try speaking again later!
                 </Text>
               )}
               <View style={styles.textInputRow}>
                 <View style={styles.textInputContainer}>
                   <TextInput
-                    style={styles.textInput}
+                    style={[styles.textInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]}
                     placeholder={isExamMode ? 'Type your response (formal)...' : 'Type your response...'}
-                    placeholderTextColor={colors.light.textMuted}
+                    placeholderTextColor={colors.textMuted}
                     value={inputText}
                     onChangeText={setInputText}
                     onSubmitEditing={handleTextSend}
@@ -400,7 +405,7 @@ export default function ConversationScreen() {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.sendButton}
+                  style={[styles.sendButton, { backgroundColor: colors.primary }]}
                   onPress={handleTextSend}
                   disabled={!inputText.trim()}
                   accessibilityLabel="Send"
@@ -409,6 +414,7 @@ export default function ConversationScreen() {
                   <Text
                     style={[
                       styles.sendButtonText,
+                      { color: colors.onPrimary },
                       !inputText.trim() && styles.sendButtonTextDisabled,
                     ]}
                   >
@@ -424,7 +430,7 @@ export default function ConversationScreen() {
                   accessibilityLabel="Try speaking instead"
                   accessibilityRole="button"
                 >
-                  <Text style={styles.trySpeechText}>
+                  <Text style={[styles.trySpeechText, { color: colors.primary }]}>
                     {'\u{1F3A4}'} Try speaking instead
                   </Text>
                 </TouchableOpacity>
@@ -441,13 +447,13 @@ export default function ConversationScreen() {
                   accessibilityLabel="Type your response instead"
                   accessibilityRole="button"
                 >
-                  <Text style={styles.typeInsteadText}>Or type your response</Text>
+                  <Text style={[styles.typeInsteadText, { color: colors.textMuted }]}>Or type your response</Text>
                 </TouchableOpacity>
               )}
 
               <View style={styles.speechControls}>
                 <TouchableOpacity
-                  style={[styles.hintButton, hintGlow && styles.hintButtonGlow]}
+                  style={[styles.hintButton, hintGlow ? [styles.hintButtonGlow, { borderColor: colors.primary, backgroundColor: colors.primarySubtle }] : [styles.hintButton, { borderColor: colors.border }]]}
                   onPress={handleHintPress}
                   accessibilityLabel="Get a hint"
                   accessibilityRole="button"
@@ -503,16 +509,13 @@ export default function ConversationScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   permissionBanner: {
-    backgroundColor: colors.light.secondary,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   permissionBannerText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.caption.lineHeight,
     textAlign: 'center',
   },
@@ -523,7 +526,6 @@ const styles = {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
   },
   headerLeft: {
     flex: 1,
@@ -534,12 +536,10 @@ const styles = {
   },
   sceneLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
   },
   examLabel: {
     fontSize: typography.caption.fontSize,
-    color: '#4A7A9B',
     fontWeight: '600',
     marginTop: 2,
   },
@@ -550,11 +550,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   headerHintButtonGlow: {
-    borderColor: colors.light.primary,
-    backgroundColor: 'rgba(91, 140, 90, 0.1)',
+    borderRadius: radii.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   headerHintIcon: {
     fontSize: 18,
@@ -569,7 +570,6 @@ const styles = {
   },
   errorText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
     marginTop: spacing['3xl'],
   },
@@ -577,12 +577,10 @@ const styles = {
     marginTop: spacing.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     alignSelf: 'center',
   },
   backBtnText: {
-    color: '#FFFFFF',
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
   },
@@ -601,7 +599,6 @@ const styles = {
     width: 28,
     height: 28,
     borderRadius: radii.full,
-    backgroundColor: colors.light.conversationPartner,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -615,28 +612,22 @@ const styles = {
     paddingVertical: spacing.sm,
   },
   messageBubbleUser: {
-    backgroundColor: colors.light.conversationUser,
     borderBottomRightRadius: 4,
   },
   messageBubblePartner: {
-    backgroundColor: colors.light.conversationPartner,
     borderBottomLeftRadius: 4,
   },
   messageText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   messageTextUser: {
-    color: colors.light.textPrimary,
   },
   youLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     alignSelf: 'flex-end',
   },
   contextChangeBanner: {
-    backgroundColor: 'rgba(232, 168, 124, 0.15)',
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -650,7 +641,6 @@ const styles = {
   },
   contextChangeText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.accentWarm,
     lineHeight: typography.caption.lineHeight,
     flex: 1,
   },
@@ -661,10 +651,8 @@ const styles = {
   completeText: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
   },
   asrStatusBanner: {
-    backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -673,7 +661,6 @@ const styles = {
   },
   asrStatusText: {
     fontSize: typography.hint.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
     textAlign: 'center',
   },
@@ -681,7 +668,6 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: 'rgba(58, 106, 143, 0.1)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -694,11 +680,9 @@ const styles = {
   examHintText: {
     flex: 1,
     fontSize: typography.hint.fontSize,
-    color: '#3A6A8F',
     lineHeight: typography.hint.lineHeight,
   },
   hintBar: {
-    backgroundColor: colors.light.secondary,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -707,18 +691,16 @@ const styles = {
   },
   hintBarText: {
     fontSize: typography.hint.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
   },
   inputArea: {
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
-    backgroundColor: colors.light.bg,
   },
   speechInputArea: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
+    gap: spacing.lg,
   },
   typeInsteadLink: {
     paddingVertical: spacing.xs,
@@ -726,7 +708,6 @@ const styles = {
   },
   typeInsteadText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textDecorationLine: 'underline',
   },
   speechControls: {
@@ -740,7 +721,6 @@ const styles = {
   },
   fallbackMessage: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
@@ -753,17 +733,13 @@ const styles = {
     flex: 1,
   },
   textInput: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   sendButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -773,7 +749,6 @@ const styles = {
   sendButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   sendButtonTextDisabled: {
     opacity: 0.5,
@@ -785,7 +760,6 @@ const styles = {
   },
   trySpeechText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.primary,
     fontWeight: '500',
   },
   hintButton: {
@@ -795,11 +769,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   hintButtonGlow: {
-    borderColor: colors.light.primary,
-    backgroundColor: 'rgba(91, 140, 90, 0.1)',
+    borderRadius: radii.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   hintButtonIcon: {
     fontSize: 20,

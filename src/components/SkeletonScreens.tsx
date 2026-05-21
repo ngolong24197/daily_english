@@ -7,7 +7,8 @@
 
 import { View, Animated, StyleSheet, type DimensionValue } from 'react-native';
 import { useEffect, useRef } from 'react';
-import { colors, spacing, radii } from '../constants/theme';
+import { spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 
 interface SkeletonBaseProps {
@@ -34,6 +35,7 @@ export function SkeletonBase({
   marginBottom = spacing.sm,
   animate = true,
 }: SkeletonBaseProps) {
+  const { colors } = useTheme();
   const opacityAnim = useRef(new Animated.Value(0.3)).current;
   const reduceMotion = useReduceMotion();
 
@@ -72,6 +74,7 @@ export function SkeletonBase({
           borderRadius,
           marginBottom,
           opacity: opacityAnim,
+          backgroundColor: colors.border,
         },
       ]}
     />
@@ -83,8 +86,10 @@ export function SkeletonBase({
  * Shows a placeholder while scene data is being fetched.
  */
 export function SceneSkeleton() {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Mode badge skeleton */}
       <SkeletonBase width={80} height={24} borderRadius={radii.full} />
 
@@ -118,10 +123,12 @@ export function SceneSkeleton() {
  * Shows a placeholder while conversation messages are loading.
  */
 export function ConversationSkeleton() {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Header skeleton */}
-      <View style={styles.headerRow}>
+      <View style={[styles.headerRow, { borderBottomColor: colors.border }]}>
         <SkeletonBase width={60} height={14} marginBottom={0} />
         <SkeletonBase width={36} height={36} borderRadius={radii.full} marginBottom={0} />
       </View>
@@ -147,14 +154,16 @@ export function ConversationSkeleton() {
  * History/My Words empty state skeleton.
  */
 export function EmptyStateSkeleton({ title, subtitle }: { title: string; subtitle: string }) {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.emptyState}>
-      <View style={styles.emptyIcon}>
-        <View style={styles.emptyIconInner} />
+      <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
+        <View style={[styles.emptyIconInner, { backgroundColor: colors.border }]} />
       </View>
       <View style={styles.emptyContent}>
-        <View style={styles.emptyTitleBar} />
-        <View style={styles.emptySubtitleBar} />
+        <View style={[styles.emptyTitleBar, { backgroundColor: colors.border }]} />
+        <View style={[styles.emptySubtitleBar, { backgroundColor: colors.border }]} />
       </View>
       <View style={styles.emptyTextContent}>
         {/* Use actual text for screen readers */}
@@ -168,14 +177,16 @@ export function EmptyStateSkeleton({ title, subtitle }: { title: string; subtitl
  * History empty state.
  */
 export function HistoryEmptyState() {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.emptyContainer}>
-      <View style={styles.emptyIcon}>
-        <View style={styles.emptyIconInner} />
+      <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
+        <View style={[styles.emptyIconInner, { backgroundColor: colors.border }]} />
       </View>
       <View style={styles.emptyContent}>
-        <View style={styles.emptyTitleBar} />
-        <View style={styles.emptySubtitleBar} />
+        <View style={[styles.emptyTitleBar, { backgroundColor: colors.border }]} />
+        <View style={[styles.emptySubtitleBar, { backgroundColor: colors.border }]} />
       </View>
     </View>
   );
@@ -185,14 +196,16 @@ export function HistoryEmptyState() {
  * My Words empty state.
  */
 export function MyWordsEmptyState() {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.emptyContainer}>
-      <View style={styles.emptyWordsIcon}>
-        <View style={styles.emptyIconInner} />
+      <View style={[styles.emptyWordsIcon, { backgroundColor: colors.surface }]}>
+        <View style={[styles.emptyIconInner, { backgroundColor: colors.border }]} />
       </View>
       <View style={styles.emptyContent}>
-        <View style={styles.emptyTitleBar} />
-        <View style={styles.emptySubtitleBar} />
+        <View style={[styles.emptyTitleBar, { backgroundColor: colors.border }]} />
+        <View style={[styles.emptySubtitleBar, { backgroundColor: colors.border }]} />
       </View>
     </View>
   );
@@ -201,7 +214,6 @@ export function MyWordsEmptyState() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
     paddingHorizontal: spacing.md,
     paddingTop: spacing.lg,
   },
@@ -221,7 +233,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
   },
   messageRow: {
     flexDirection: 'row',
@@ -238,7 +249,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
   },
   skeletonBase: {
-    backgroundColor: colors.light.border,
+    // backgroundColor set inline
   },
   emptyState: {
     flex: 1,
@@ -256,7 +267,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
@@ -265,7 +275,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
@@ -274,7 +283,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.light.border,
   },
   emptyContent: {
     alignItems: 'center',
@@ -283,14 +291,12 @@ const styles = StyleSheet.create({
     width: 180,
     height: 22,
     borderRadius: radii.sm,
-    backgroundColor: colors.light.border,
     marginBottom: spacing.sm,
   },
   emptySubtitleBar: {
     width: 240,
     height: 16,
     borderRadius: radii.sm,
-    backgroundColor: colors.light.border,
   },
   emptyTextContent: {
     alignItems: 'center',

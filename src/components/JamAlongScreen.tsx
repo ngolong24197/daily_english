@@ -7,10 +7,12 @@ import {
   Platform,
   TextInput,
   Animated,
+  type TextStyle,
 } from 'react-native';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import { getAsrErrorMessage } from '@/services/asrService';
 import { useAudioRecording } from '@/hooks/useAudioRecording';
@@ -22,6 +24,7 @@ import {
 } from '@/services/jamAlongData';
 
 export default function JamAlongScreen() {
+  const { colors } = useTheme();
   const {
     currentScene,
     currentMode,
@@ -166,7 +169,7 @@ export default function JamAlongScreen() {
     setConversationMessages(
       completedLines.map((line, i) => ({
         id: `msg-${i}`,
-        speaker: line.speaker === 'user' ? 'user' as const : 'npc' as const,
+        speaker: line.speaker === 'user' ? 'user' : 'npc',
         text: line.speaker === 'user' ? (userInputs[i] ?? line.text) : line.text,
         timestamp: Date.now(),
         wordsUsed: [],
@@ -217,10 +220,10 @@ export default function JamAlongScreen() {
 
   if (!script) {
     return (
-      <View style={jamStyles.container}>
-        <Text style={jamStyles.errorText}>Something went wrong loading the Jam Along.</Text>
-        <TouchableOpacity style={jamStyles.backBtn} onPress={handleBackToConversation}>
-          <Text style={jamStyles.backBtnText}>Go back</Text>
+      <View style={[jamStyles.container, { backgroundColor: colors.bg }]}>
+        <Text style={[jamStyles.errorText, { color: colors.textSecondary }]}>Something went wrong loading the Jam Along.</Text>
+        <TouchableOpacity style={[jamStyles.backBtn, { backgroundColor: colors.primary }]} onPress={handleBackToConversation}>
+          <Text style={[jamStyles.backBtnText, { color: colors.onPrimary }]}>Go back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -242,13 +245,13 @@ export default function JamAlongScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={jamStyles.container}
+      style={[jamStyles.container, { backgroundColor: colors.surfaceWarm }]}
     >
       {/* Warm-tinted background for Jam Along */}
-      <View style={jamStyles.stageLabel}>
+      <View style={[jamStyles.stageLabel, { borderBottomColor: colors.border }]}>
         <Text style={jamStyles.stageIcon}>{'\u{1F3B5}'}</Text>
-        <Text style={jamStyles.stageTitle}>Jam Along</Text>
-        <Text style={jamStyles.stageSubtitle}>{script.title}</Text>
+        <Text style={[jamStyles.stageTitle, { color: colors.textPrimary }]}>Jam Along</Text>
+        <Text style={[jamStyles.stageSubtitle, { color: colors.textSecondary }]}>{script.title}</Text>
       </View>
 
       <ScrollView
@@ -264,22 +267,22 @@ export default function JamAlongScreen() {
             <View key={`completed-${idx}`}>
               {isUserLine ? (
                 <View style={jamStyles.userLineRow}>
-                  <View style={jamStyles.userLineBubble}>
-                    <Text style={jamStyles.userLineLabel}>You</Text>
-                    <Text style={jamStyles.userLineText}>{actualText}</Text>
+                  <View style={[jamStyles.userLineBubble, { backgroundColor: colors.conversationUser }]}>
+                    <Text style={[jamStyles.userLineLabel, { color: colors.primary }]}>You</Text>
+                    <Text style={[jamStyles.userLineText, { color: colors.textPrimary }]}>{actualText}</Text>
                   </View>
                 </View>
               ) : (
                 <View style={jamStyles.nativeLineRow}>
                   <TouchableOpacity
                     onPress={() => handleReplayLine(idx)}
-                    style={jamStyles.nativeReplayButton}
+                    style={[jamStyles.nativeReplayButton, { backgroundColor: colors.conversationPartner }]}
                     accessibilityLabel="Replay this line"
                   >
-                    <Text style={jamStyles.nativeReplayIcon}>{'\u{25B6}'}</Text>
+                    <Text style={[jamStyles.nativeReplayIcon, { color: colors.textPrimary }]}>{'\u{25B6}'}</Text>
                   </TouchableOpacity>
-                  <View style={jamStyles.nativeLineBubble}>
-                    <Text style={jamStyles.nativeLineText}>{line.text}</Text>
+                  <View style={[jamStyles.nativeLineBubble, { backgroundColor: colors.conversationPartner }]}>
+                    <Text style={[jamStyles.nativeLineText, { color: colors.textPrimary }]}>{line.text}</Text>
                   </View>
                 </View>
               )}
@@ -290,10 +293,10 @@ export default function JamAlongScreen() {
         {/* Current user slot (active) */}
         {isUserSlot && !isComplete && (
           <Animated.View style={[jamStyles.userSlotContainer, { transform: [{ scale: pulseAnim }] }]}>
-            <View style={jamStyles.userSlotBubble}>
+            <View style={[jamStyles.userSlotBubble, { backgroundColor: colors.primarySubtle, borderColor: colors.primary }]}>
               <Text style={jamStyles.micIcon}>{'\u{1F3A4}'}</Text>
-              <Text style={jamStyles.yourTurnLabel}>Your turn -- fill in!</Text>
-              <Text style={jamStyles.userSlotHint}>
+              <Text style={[jamStyles.yourTurnLabel, { color: colors.primary }]}>Your turn -- fill in!</Text>
+              <Text style={[jamStyles.userSlotHint, { color: colors.textSecondary }]}>
                 {currentLine.hintLevel1}
               </Text>
             </View>
@@ -305,13 +308,13 @@ export default function JamAlongScreen() {
           <View style={jamStyles.nativeLineRow}>
             <TouchableOpacity
               onPress={() => handleReplayLine(currentLineIndex)}
-              style={jamStyles.nativeReplayButton}
+              style={[jamStyles.nativeReplayButton, { backgroundColor: colors.conversationPartner }]}
               accessibilityLabel="Replay this line"
             >
-              <Text style={jamStyles.nativeReplayIcon}>{'\u{25B6}'}</Text>
+              <Text style={[jamStyles.nativeReplayIcon, { color: colors.textPrimary }]}>{'\u{25B6}'}</Text>
             </TouchableOpacity>
-            <View style={jamStyles.nativeLineBubble}>
-              <Text style={jamStyles.nativeLineText}>{currentLine.text}</Text>
+            <View style={[jamStyles.nativeLineBubble, { backgroundColor: colors.conversationPartner }]}>
+              <Text style={[jamStyles.nativeLineText, { color: colors.textPrimary }]}>{currentLine.text}</Text>
             </View>
           </View>
         )}
@@ -319,8 +322,8 @@ export default function JamAlongScreen() {
         {/* Completion message */}
         {isComplete && (
           <View style={jamStyles.completeIndicator}>
-            <Text style={jamStyles.completeTitle}>Great job!</Text>
-            <Text style={jamStyles.completeText}>
+            <Text style={[jamStyles.completeTitle, { color: colors.primary }]}>Great job!</Text>
+            <Text style={[jamStyles.completeText, { color: colors.textSecondary }]}>
               You completed the Jam Along. Here is the full dialogue:
             </Text>
           </View>
@@ -337,13 +340,14 @@ export default function JamAlongScreen() {
                   key={`review-${idx}`}
                   style={[
                     jamStyles.reviewLine,
-                    isUserLine && jamStyles.reviewLineUser,
+                    { backgroundColor: colors.conversationPartner },
+                    isUserLine && [jamStyles.reviewLineUser, { backgroundColor: colors.primaryLight, borderLeftColor: colors.primary }],
                   ]}
                 >
-                  <Text style={jamStyles.reviewSpeaker}>
+                  <Text style={[jamStyles.reviewSpeaker, { color: colors.textSecondary }]}>
                     {isUserLine ? 'You:' : 'Native speaker:'}
                   </Text>
-                  <Text style={[jamStyles.reviewText, isUserLine && jamStyles.reviewTextUser]}>
+                  <Text style={[jamStyles.reviewText, { color: colors.textPrimary }, isUserLine && jamStyles.reviewTextUser]}>
                     {actualText}
                   </Text>
                 </View>
@@ -355,28 +359,28 @@ export default function JamAlongScreen() {
 
       {/* Hint display */}
       {hintText && !isComplete && (
-        <View style={jamStyles.hintBar}>
-          <Text style={jamStyles.hintBarText}>{hintText}</Text>
+        <View style={[jamStyles.hintBar, { backgroundColor: colors.secondary }]}>
+          <Text style={[jamStyles.hintBarText, { color: colors.textPrimary }]}>{hintText}</Text>
         </View>
       )}
 
       {/* ASR status */}
       {asrStatusMessage && (
-        <View style={jamStyles.asrBanner}>
-          <Text style={jamStyles.asrBannerText}>{asrStatusMessage}</Text>
+        <View style={[jamStyles.asrBanner, { backgroundColor: colors.secondaryMedium }]}>
+          <Text style={[jamStyles.asrBannerText, { color: colors.textPrimary }]}>{asrStatusMessage}</Text>
         </View>
       )}
 
       {/* Input area */}
       {!isComplete && isUserSlot && (
-        <View style={jamStyles.inputArea}>
+        <View style={[jamStyles.inputArea, { borderTopColor: colors.border, backgroundColor: colors.surfaceWarm }]}>
           {showTextInput ? (
             <View style={jamStyles.textInputArea}>
               <View style={jamStyles.textInputRow}>
                 <TextInput
-                  style={jamStyles.textInput}
+                  style={[jamStyles.textInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]}
                   placeholder="Type your response..."
-                  placeholderTextColor={colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   value={inputText}
                   onChangeText={setInputText}
                   onSubmitEditing={handleTextSend}
@@ -384,11 +388,11 @@ export default function JamAlongScreen() {
                   autoFocus
                 />
                 <TouchableOpacity
-                  style={jamStyles.sendButton}
+                  style={[jamStyles.sendButton, { backgroundColor: colors.primary }]}
                   onPress={handleTextSend}
                   disabled={!inputText.trim()}
                 >
-                  <Text style={jamStyles.sendButtonText}>Send</Text>
+                  <Text style={[jamStyles.sendButtonText, { color: colors.onPrimary }]}>Send</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -396,7 +400,7 @@ export default function JamAlongScreen() {
 
           <View style={jamStyles.speechControls}>
             <TouchableOpacity
-              style={jamStyles.hintButton}
+              style={[jamStyles.hintButton, { borderColor: colors.border }]}
               onPress={handleHintPress}
               accessibilityLabel="Get a hint"
               accessibilityRole="button"
@@ -422,7 +426,7 @@ export default function JamAlongScreen() {
                 style={jamStyles.typeInsteadButton}
                 onPress={() => setInputMode('text')}
               >
-                <Text style={jamStyles.typeInsteadText}>Or type your response</Text>
+                <Text style={[jamStyles.typeInsteadText, { color: colors.textMuted }]}>Or type your response</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -430,9 +434,9 @@ export default function JamAlongScreen() {
       )}
 
       {/* Back to conversation button */}
-      <View style={jamStyles.footerActions}>
+      <View style={[jamStyles.footerActions, { borderTopColor: colors.border }]}>
         <TouchableOpacity onPress={handleBackToConversation} style={jamStyles.switchFormatButton}>
-          <Text style={jamStyles.switchFormatText}>Switch to regular conversation</Text>
+          <Text style={[jamStyles.switchFormatText, { color: colors.textSecondary }]}>Switch to regular conversation</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -442,7 +446,6 @@ export default function JamAlongScreen() {
 const jamStyles = {
   container: {
     flex: 1,
-    backgroundColor: '#FFF8F0', // Warm tint for Jam Along mode
   },
   stageLabel: {
     flexDirection: 'row',
@@ -451,7 +454,6 @@ const jamStyles = {
     gap: spacing.sm,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
   },
   stageIcon: {
     fontSize: 20,
@@ -459,11 +461,9 @@ const jamStyles = {
   stageTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
   },
   stageSubtitle: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     marginLeft: spacing.sm,
   },
   messageList: {
@@ -484,18 +484,15 @@ const jamStyles = {
     width: 28,
     height: 28,
     borderRadius: radii.full,
-    backgroundColor: colors.light.conversationPartner,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
   },
   nativeReplayIcon: {
     fontSize: 12,
-    color: colors.light.textPrimary,
   },
   nativeLineBubble: {
     maxWidth: '80%',
-    backgroundColor: colors.light.conversationPartner,
     borderRadius: radii.md,
     borderBottomLeftRadius: 4,
     paddingHorizontal: spacing.md,
@@ -503,7 +500,6 @@ const jamStyles = {
   },
   nativeLineText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   // User line styling (completed)
@@ -513,7 +509,6 @@ const jamStyles = {
   },
   userLineBubble: {
     maxWidth: '80%',
-    backgroundColor: colors.light.conversationUser,
     borderRadius: radii.md,
     borderBottomRightRadius: 4,
     paddingHorizontal: spacing.md,
@@ -521,13 +516,11 @@ const jamStyles = {
   },
   userLineLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.primary,
     fontWeight: '600',
     marginBottom: 2,
   },
   userLineText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   // Active user slot (pulsing)
@@ -536,10 +529,8 @@ const jamStyles = {
   },
   userSlotBubble: {
     width: '90%',
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.lg,
     borderWidth: 2,
-    borderColor: colors.light.primary,
     borderStyle: 'dashed',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
@@ -552,16 +543,13 @@ const jamStyles = {
   yourTurnLabel: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
   },
   userSlotHint: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     fontStyle: 'italic',
   },
   // Hint bar
   hintBar: {
-    backgroundColor: colors.light.secondary,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -570,12 +558,10 @@ const jamStyles = {
   },
   hintBarText: {
     fontSize: typography.hint.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
   },
   // ASR banner
   asrBanner: {
-    backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -584,15 +570,12 @@ const jamStyles = {
   },
   asrBannerText: {
     fontSize: typography.hint.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.hint.lineHeight,
     textAlign: 'center',
   },
   // Input area
   inputArea: {
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
-    backgroundColor: '#FFF8F0',
   },
   speechControls: {
     paddingHorizontal: spacing.md,
@@ -611,17 +594,13 @@ const jamStyles = {
   },
   textInput: {
     flex: 1,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   sendButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -631,7 +610,6 @@ const jamStyles = {
   sendButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   hintButton: {
     width: 44,
@@ -640,7 +618,6 @@ const jamStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   hintButtonIcon: {
     fontSize: 20,
@@ -650,7 +627,6 @@ const jamStyles = {
   },
   typeInsteadText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textDecorationLine: 'underline',
   },
   // Completion
@@ -661,12 +637,10 @@ const jamStyles = {
   completeTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
     marginBottom: spacing.xs,
   },
   completeText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
   },
   // Dialogue review
@@ -675,25 +649,20 @@ const jamStyles = {
     paddingBottom: spacing.md,
   },
   reviewLine: {
-    backgroundColor: colors.light.conversationPartner,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   reviewLineUser: {
-    backgroundColor: 'rgba(91, 140, 90, 0.12)',
     borderLeftWidth: 3,
-    borderLeftColor: colors.light.primary,
   },
   reviewSpeaker: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     fontWeight: '600',
     marginBottom: 2,
   },
   reviewText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   reviewTextUser: {
@@ -704,7 +673,6 @@ const jamStyles = {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
   },
   switchFormatButton: {
     paddingVertical: spacing.sm,
@@ -712,13 +680,11 @@ const jamStyles = {
   },
   switchFormatText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     textDecorationLine: 'underline',
   },
   // Error state
   errorText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     textAlign: 'center',
     marginTop: spacing['3xl'],
   },
@@ -726,12 +692,10 @@ const jamStyles = {
     marginTop: spacing.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     alignSelf: 'center',
   },
   backBtnText: {
-    color: '#FFFFFF',
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
   },

@@ -1,7 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Animated, type TextStyle } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { modeColors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { CompletedSession } from '@/stores/sessionStore';
 import { getModeBadgeColor, getModeBadgeLabel } from '@/services/wordService';
@@ -15,6 +17,7 @@ import PremiumUpgradeSheet from '@/components/PremiumUpgradeSheet';
 import type { ModeCode } from '@/types';
 
 export default function ReviewScreen() {
+  const { colors } = useTheme();
   const {
     completedSessions,
     currentScene,
@@ -124,14 +127,14 @@ export default function ReviewScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView
         style={styles.scrollContent}
         contentContainerStyle={styles.scrollContentInner}
       >
         <Animated.View style={[fadeIn, slideUp]}>
-        <Text style={styles.title}>Today's Conversation</Text>
-        <Text style={styles.date}>{dateStr}</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>Today's Conversation</Text>
+        <Text style={[styles.date, { color: colors.textMuted }]}>{dateStr}</Text>
 
         {/* Mode badge with context */}
         <View style={styles.modeSection}>
@@ -140,30 +143,30 @@ export default function ReviewScreen() {
               {modeBadgeLabel}
             </Text>
           </View>
-          <Text style={styles.modeContextLabel}>{modeContextLabel}</Text>
+          <Text style={[styles.modeContextLabel, { color: colors.textSecondary }]}>{modeContextLabel}</Text>
           {examMode && (
-            <View style={styles.examModeBadge}>
-              <Text style={styles.examModeBadgeText}>{'\u{1F4DD}'} Exam Mode</Text>
+            <View style={[styles.examModeBadge, { backgroundColor: colors.accentCoolLight }]}>
+              <Text style={[styles.examModeBadgeText, { color: modeColors.professional.accent }]}>{'\u{1F4DD}'} Exam Mode</Text>
             </View>
           )}
         </View>
 
-        <View style={styles.encouragementCard}>
+        <View style={[styles.encouragementCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={styles.encouragementEmoji}>{'\u{1F331}'}</Text>
-          <Text style={styles.encouragementText}>Nice work today!</Text>
+          <Text style={[styles.encouragementText, { color: colors.primary }]}>Nice work today!</Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>You said:</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>You said:</Text>
           {userSentences.length > 0 ? (
             userSentences.map((sentence, index) => (
-              <View key={index} style={styles.sentenceCard}>
-                <Text style={styles.sentenceQuote}>{'\u{201C}'}</Text>
-                <Text style={styles.sentenceText}>{sentence}</Text>
+              <View key={index} style={[styles.sentenceCard, { backgroundColor: colors.surface, borderLeftColor: colors.primary }]}>
+                <Text style={[styles.sentenceQuote, { color: colors.primary }]}>{'\u{201C}'}</Text>
+                <Text style={[styles.sentenceText, { color: colors.textPrimary }]}>{sentence}</Text>
               </View>
             ))
           ) : (
-            <Text style={styles.emptyText}>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
               Your sentences will appear here after your conversation.
             </Text>
           )}
@@ -172,13 +175,13 @@ export default function ReviewScreen() {
         {/* New words section */}
         {(newWords ?? []).length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>New words today</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>New words today</Text>
             <View style={styles.chipRow}>
               {(newWords ?? []).map((word) => {
                 const wordBadgeColors = getModeBadgeColor(modeCode);
                 return (
-                  <View key={word.id} style={styles.newWordChip}>
-                    <Text style={styles.newWordChipText}>{word.lemma}</Text>
+                  <View key={word.id} style={[styles.newWordChip, { backgroundColor: colors.secondaryMedium }]}>
+                    <Text style={[styles.newWordChipText, { color: colors.accentWarm }]}>{word.lemma}</Text>
                     <View style={[styles.wordModeDot, { backgroundColor: wordBadgeColors.text }]} />
                   </View>
                 );
@@ -190,23 +193,23 @@ export default function ReviewScreen() {
         {/* Review words section — with context changes */}
         {(reviewWords ?? []).length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Words you revisited</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Words you revisited</Text>
             {(reviewWords ?? []).map((word) => {
               const contextChange = contextChanges[word.id] ?? latestSession?.contextChanges?.[word.id];
               return (
-                <View key={word.id} style={styles.reviewWordCard}>
+                <View key={word.id} style={[styles.reviewWordCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                   <View style={styles.reviewWordRow}>
-                    <View style={styles.reviewWordChip}>
-                      <Text style={styles.reviewWordChipText}>{word.lemma}</Text>
+                    <View style={[styles.reviewWordChip, { backgroundColor: colors.primaryMedium }]}>
+                      <Text style={[styles.reviewWordChipText, { color: colors.primary }]}>{word.lemma}</Text>
                     </View>
-                    <Text style={styles.reviewWordContext}>
+                    <Text style={[styles.reviewWordContext, { color: colors.textSecondary }]}>
                       {word.modeEntries?.[modeCode]?.example_context ?? word.modeEntries?.survival?.example_context}
                     </Text>
                   </View>
                   {contextChange && (
-                    <View style={styles.contextChangeRow}>
+                    <View style={[styles.contextChangeRow, { borderTopColor: colors.border }]}>
                       <Text style={styles.contextChangeEmoji}>{'\u{2728}'}</Text>
-                      <Text style={styles.contextChangeText}>{contextChange}</Text>
+                      <Text style={[styles.contextChangeText, { color: colors.accentWarm }]}>{contextChange}</Text>
                     </View>
                   )}
                 </View>
@@ -218,15 +221,15 @@ export default function ReviewScreen() {
         {/* Closing message (ad is shown separately for free users) */}
         {isPremium && (
           <View style={styles.closingMessage}>
-            <Text style={styles.closingText}>See you tomorrow!</Text>
+            <Text style={[styles.closingText, { color: colors.primary }]}>See you tomorrow!</Text>
           </View>
         )}
         </Animated.View>
       </ScrollView>
 
-      <View style={styles.buttonArea}>
+      <View style={[styles.buttonArea, { borderTopColor: colors.border, backgroundColor: colors.bg }]}>
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={[styles.primaryButton, { backgroundColor: colors.primary }]}
           onPress={() => {
             haptics.impactMedium();
             handleDone();
@@ -234,21 +237,21 @@ export default function ReviewScreen() {
           accessibilityRole="button"
           accessibilityLabel="Done for today"
         >
-          <Text style={styles.primaryButtonText}>Done for today</Text>
+          <Text style={[styles.primaryButtonText, { color: colors.onPrimary }]}>Done for today</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.secondaryButton}
+          style={[styles.secondaryButton, { borderColor: colors.primary }]}
           onPress={handleKeepTalking}
           accessibilityRole="button"
           accessibilityLabel="Keep talking"
         >
-          <Text style={styles.secondaryButtonText}>Keep talking</Text>
+          <Text style={[styles.secondaryButtonText, { color: colors.primary }]}>Keep talking</Text>
         </TouchableOpacity>
       </View>
 
       {/* Session close ad for free users */}
       {showAd && (
-        <View style={styles.adOverlay}>
+        <View style={[styles.adOverlay, { backgroundColor: colors.bg }]}>
           <SessionCloseAd
             onContinue={handleAdContinue}
             onUpgrade={handleAdUpgrade}
@@ -289,7 +292,6 @@ function getModeContextLabel(mode: ModeCode): string {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   scrollContent: {
     flex: 1,
@@ -300,14 +302,12 @@ const styles = {
   },
   title: {
     fontSize: typography.heading.fontSize,
-    fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
+    fontWeight: typography.heading.fontWeight as TextStyle['fontWeight'],
     lineHeight: typography.heading.lineHeight,
     marginTop: spacing.lg,
   },
   date: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
     marginTop: spacing.xs,
   },
@@ -326,11 +326,9 @@ const styles = {
   },
   modeContextLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.xs,
   },
   examModeBadge: {
-    backgroundColor: 'rgba(126, 181, 214, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
@@ -340,16 +338,13 @@ const styles = {
   examModeBadgeText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: '#4A7A9B',
   },
   encouragementCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.lg,
     alignItems: 'center',
     marginTop: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   encouragementEmoji: {
     fontSize: 32,
@@ -358,7 +353,6 @@ const styles = {
   encouragementText: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '500',
-    color: colors.light.primary,
     lineHeight: typography.subheading.lineHeight,
   },
   section: {
@@ -366,32 +360,26 @@ const styles = {
   },
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
-    fontWeight: typography.subheading.fontWeight,
-    color: colors.light.textPrimary,
+    fontWeight: typography.subheading.fontWeight as TextStyle['fontWeight'],
     marginBottom: spacing.sm,
   },
   emptyText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
   },
   sentenceCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderLeftWidth: 3,
-    borderLeftColor: colors.light.primary,
   },
   sentenceQuote: {
     fontSize: typography.heading.fontSize,
-    color: colors.light.primary,
     lineHeight: typography.heading.lineHeight,
     marginBottom: -spacing.sm,
   },
   sentenceText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
     fontStyle: 'italic',
   },
@@ -401,7 +389,6 @@ const styles = {
     gap: spacing.sm,
   },
   newWordChip: {
-    backgroundColor: 'rgba(232, 168, 124, 0.2)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -411,7 +398,6 @@ const styles = {
   },
   newWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.accentWarm,
     fontWeight: '500',
   },
   wordModeDot: {
@@ -420,12 +406,10 @@ const styles = {
     borderRadius: 3,
   },
   reviewWordCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   reviewWordRow: {
     flexDirection: 'row',
@@ -433,19 +417,16 @@ const styles = {
     gap: spacing.sm,
   },
   reviewWordChip: {
-    backgroundColor: 'rgba(91, 140, 90, 0.15)',
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   reviewWordChipText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '500',
   },
   reviewWordContext: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     flex: 1,
   },
@@ -456,14 +437,12 @@ const styles = {
     marginTop: spacing.sm,
     paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
   },
   contextChangeEmoji: {
     fontSize: 14,
   },
   contextChangeText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.accentWarm,
     lineHeight: typography.caption.lineHeight,
     flex: 1,
   },
@@ -473,7 +452,6 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.light.bg,
     zIndex: 10,
   },
   closingMessage: {
@@ -484,7 +462,6 @@ const styles = {
   closingText: {
     fontSize: typography.body.fontSize,
     fontWeight: '500',
-    color: colors.light.primary,
     lineHeight: typography.body.lineHeight,
   },
   buttonArea: {
@@ -492,30 +469,24 @@ const styles = {
     paddingVertical: spacing.md,
     gap: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
-    backgroundColor: colors.light.bg,
   },
   primaryButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
   },
   primaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
+    fontWeight: typography.button.fontWeight as TextStyle['fontWeight'],
   },
   secondaryButton: {
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.light.primary,
   },
   secondaryButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
-    color: colors.light.primary,
+    fontWeight: typography.button.fontWeight as TextStyle['fontWeight'],
   },
 } as const;

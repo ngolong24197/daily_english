@@ -9,7 +9,8 @@
  */
 
 import { View, Text, TouchableOpacity, Modal, Pressable, ScrollView } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import type { MockWord } from '../services/mockData';
 import type { ModeCode } from '../types';
 import {
@@ -30,10 +31,10 @@ interface WordExplorationSheetProps {
   onClose: () => void;
 }
 
-const MASTERY_CONFIG: Record<MasteryLevel, { emoji: string; label: string; color: string }> = {
-  seed: { emoji: '\u{1F331}', label: 'Seed', color: colors.light.textSecondary },
-  sprout: { emoji: '\u{1F33F}', label: 'Sprout', color: colors.light.primary },
-  bloom: { emoji: '\u{1F33A}', label: 'Bloom', color: colors.light.accentWarm },
+const MASTERY_CONFIG: Record<MasteryLevel, { emoji: string; label: string; colorKey: string }> = {
+  seed: { emoji: '\u{1F331}', label: 'Seed', colorKey: 'textSecondary' },
+  sprout: { emoji: '\u{1F33F}', label: 'Sprout', colorKey: 'primary' },
+  bloom: { emoji: '\u{1F33A}', label: 'Bloom', colorKey: 'accentWarm' },
 };
 
 export default function WordExplorationSheet({
@@ -44,6 +45,8 @@ export default function WordExplorationSheet({
   masteryLevel,
   onClose,
 }: WordExplorationSheetProps) {
+  const { colors } = useTheme();
+
   if (!word) return null;
 
   const entry = getWordModeEntry(word, modeCode);
@@ -53,6 +56,7 @@ export default function WordExplorationSheet({
   const availableModes = getAvailableModesForWord(word);
   const mastery = masteryLevel ?? 'seed';
   const masteryConfig = MASTERY_CONFIG[mastery] ?? MASTERY_CONFIG.seed;
+  const masteryColor = colors[masteryConfig.colorKey as keyof typeof colors] as string;
 
   return (
     <Modal
@@ -62,28 +66,28 @@ export default function WordExplorationSheet({
       onRequestClose={onClose}
       accessibilityLabel={`Word details for ${word.lemma}`}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.sheetContent} onPress={() => {}}>
-          <View style={styles.handle} />
+      <Pressable style={[styles.overlay, { backgroundColor: colors.overlayMedium }]} onPress={onClose}>
+        <Pressable style={[styles.sheetContent, { backgroundColor: colors.bg }]} onPress={() => {}}>
+          <View style={[styles.handle, { backgroundColor: colors.border }]} />
 
           {/* Context change callout (for review words) */}
           {contextChangeDescription && (
-            <View style={styles.contextChangeCard}>
+            <View style={[styles.contextChangeCard, { backgroundColor: colors.secondaryMedium }]}>
               <Text style={styles.contextChangeEmoji}>{'\u{2728}'}</Text>
-              <Text style={styles.contextChangeText}>{contextChangeDescription}</Text>
+              <Text style={[styles.contextChangeText, { color: colors.textPrimary }]}>{contextChangeDescription}</Text>
             </View>
           )}
 
           {/* Word header */}
           <View style={styles.wordHeader} accessibilityLabel={`${word.lemma}, ${word.pos}`}>
-            <Text style={styles.wordLemma}>{word.lemma}</Text>
-            <Text style={styles.wordPos}>{word.pos}</Text>
+            <Text style={[styles.wordLemma, { color: colors.textPrimary }]}>{word.lemma}</Text>
+            <Text style={[styles.wordPos, { color: colors.textMuted }]}>{word.pos}</Text>
           </View>
 
           {/* Mastery indicator */}
           <View style={styles.masteryRow}>
             <Text style={styles.masteryEmoji}>{masteryConfig.emoji}</Text>
-            <Text style={[styles.masteryLabel, { color: masteryConfig.color }]}>
+            <Text style={[styles.masteryLabel, { color: masteryColor }]}>
               {masteryConfig.label}
             </Text>
           </View>
@@ -96,25 +100,25 @@ export default function WordExplorationSheet({
           </View>
 
           {/* Situational explanation */}
-          <Text style={styles.sectionLabel}>What it means here</Text>
-          <Text style={styles.explanation}>{entry.meaning_context}</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>What it means here</Text>
+          <Text style={[styles.explanation, { color: colors.textPrimary }]}>{entry.meaning_context}</Text>
 
           {/* Example sentence */}
-          <View style={styles.exampleCard}>
-            <Text style={styles.exampleText}>{entry.example_sentence}</Text>
-            <Text style={styles.exampleContext}>{entry.example_context}</Text>
+          <View style={[styles.exampleCard, { backgroundColor: colors.surface, borderLeftColor: colors.accentWarm }]}>
+            <Text style={[styles.exampleText, { color: colors.textPrimary }]}>{entry.example_sentence}</Text>
+            <Text style={[styles.exampleContext, { color: colors.textSecondary }]}>{entry.example_context}</Text>
           </View>
 
           {/* Try saying */}
-          <View style={styles.trySayingCard} accessibilityLabel={`Try saying: ${trySaying}`}>
-            <Text style={styles.trySayingLabel}>Try saying</Text>
-            <Text style={styles.trySayingText}>{trySaying}</Text>
+          <View style={[styles.trySayingCard, { backgroundColor: colors.primarySubtle }]}>
+            <Text style={[styles.trySayingLabel, { color: colors.primary }]}>Try saying</Text>
+            <Text style={[styles.trySayingText, { color: colors.textPrimary }]}>{trySaying}</Text>
           </View>
 
           {/* Other modes available */}
           {availableModes.length > 1 && (
             <View style={styles.otherModesSection}>
-              <Text style={styles.otherModesLabel}>Also used in</Text>
+              <Text style={[styles.otherModesLabel, { color: colors.textMuted }]}>Also used in</Text>
               <View style={styles.otherModesRow}>
                 {availableModes
                   .filter((m) => m !== modeCode)
@@ -138,12 +142,12 @@ export default function WordExplorationSheet({
 
           {/* Dismiss button */}
           <TouchableOpacity
-            style={styles.dismissButton}
+            style={[styles.dismissButton, { backgroundColor: colors.primary }]}
             onPress={onClose}
             accessibilityLabel="Close"
             accessibilityRole="button"
           >
-            <Text style={styles.dismissButtonText}>Got it</Text>
+            <Text style={[styles.dismissButtonText, { color: colors.onPrimary }]}>Got it</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -154,11 +158,9 @@ export default function WordExplorationSheet({
 const styles = {
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end' as const,
   },
   sheetContent: {
-    backgroundColor: colors.light.bg,
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     padding: spacing.lg,
@@ -169,16 +171,14 @@ const styles = {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.light.border,
-    alignSelf: 'center',
+    alignSelf: 'center' as const,
     marginBottom: spacing.lg,
   },
   contextChangeCard: {
-    backgroundColor: 'rgba(232, 168, 124, 0.15)',
     borderRadius: radii.md,
     padding: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: spacing.sm,
     marginBottom: spacing.lg,
   },
@@ -188,29 +188,26 @@ const styles = {
   contextChangeText: {
     flex: 1,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   wordHeader: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: 'row' as const,
+    alignItems: 'baseline' as const,
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
   wordLemma: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.light.textPrimary,
     fontStyle: 'italic',
   },
   wordPos: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
-    textTransform: 'lowercase',
+    textTransform: 'lowercase' as const,
   },
   masteryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: spacing.xs,
     marginBottom: spacing.sm,
   },
@@ -222,7 +219,7 @@ const styles = {
     fontWeight: '600',
   },
   modeBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-start' as const,
     borderRadius: radii.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -235,37 +232,30 @@ const styles = {
   sectionLabel: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: colors.light.textMuted,
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as const,
     marginBottom: spacing.xs,
   },
   explanation: {
     fontSize: typography.bodyLg.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.bodyLg.lineHeight,
     marginBottom: spacing.lg,
   },
   exampleCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     marginBottom: spacing.md,
     borderLeftWidth: 3,
-    borderLeftColor: colors.light.accentWarm,
   },
   exampleText: {
     fontSize: typography.body.fontSize,
     fontStyle: 'italic',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   exampleContext: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.xs,
   },
   trySayingCard: {
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.md,
     padding: spacing.md,
     marginBottom: spacing.lg,
@@ -273,12 +263,10 @@ const styles = {
   trySayingLabel: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
     marginBottom: spacing.xs,
   },
   trySayingText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   otherModesSection: {
@@ -286,11 +274,10 @@ const styles = {
   },
   otherModesLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     marginBottom: spacing.xs,
   },
   otherModesRow: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     gap: spacing.sm,
   },
   otherModeChip: {
@@ -303,7 +290,6 @@ const styles = {
     fontWeight: '500',
   },
   dismissButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -311,6 +297,5 @@ const styles = {
   dismissButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
 } as const;

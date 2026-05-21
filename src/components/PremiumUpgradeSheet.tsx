@@ -7,7 +7,8 @@
  */
 
 import { View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface PremiumUpgradeSheetProps {
   visible: boolean;
@@ -55,6 +56,8 @@ export default function PremiumUpgradeSheet({
   subtitle,
   onActivatePremium,
 }: PremiumUpgradeSheetProps) {
+  const { colors } = useTheme();
+
   const handleStartTrial = () => {
     if (onActivatePremium) {
       onActivatePremium();
@@ -69,18 +72,18 @@ export default function PremiumUpgradeSheet({
       transparent
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.sheetContent} onPress={() => {}}>
-          <View style={styles.handle} />
+      <Pressable style={[styles.overlay, { backgroundColor: colors.overlayMedium }]} onPress={onClose}>
+        <Pressable style={[styles.sheetContent, { backgroundColor: colors.bg }]} onPress={() => {}}>
+          <View style={[styles.handle, { backgroundColor: colors.border }]} />
 
-          <Text style={styles.title}>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>
             {title ?? 'Upgrade to Daily English Premium'}
           </Text>
 
           {subtitle ? (
-            <Text style={styles.subtitle}>{subtitle}</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text>
           ) : (
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Go deeper with more tracks, full history, and no ads.
             </Text>
           )}
@@ -90,25 +93,25 @@ export default function PremiumUpgradeSheet({
               <View key={benefit.title} style={styles.benefitRow}>
                 <Text style={styles.benefitEmoji}>{benefit.emoji}</Text>
                 <View style={styles.benefitText}>
-                  <Text style={styles.benefitTitle}>{benefit.title}</Text>
-                  <Text style={styles.benefitDescription}>{benefit.description}</Text>
+                  <Text style={[styles.benefitTitle, { color: colors.textPrimary }]}>{benefit.title}</Text>
+                  <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>{benefit.description}</Text>
                 </View>
               </View>
             ))}
           </View>
 
-          <View style={styles.pricingCard}>
-            <Text style={styles.pricingPrice}>$9.99/month</Text>
-            <Text style={styles.pricingAlt}>or $79.99/year</Text>
+          <View style={[styles.pricingCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
+            <Text style={[styles.pricingPrice, { color: colors.primary }]}>$9.99/month</Text>
+            <Text style={[styles.pricingAlt, { color: colors.textSecondary }]}>or $79.99/year</Text>
           </View>
 
           <TouchableOpacity
-            style={styles.ctaButton}
+            style={[styles.ctaButton, { backgroundColor: colors.primary }]}
             onPress={handleStartTrial}
             accessibilityRole="button"
             accessibilityLabel="Start free trial"
           >
-            <Text style={styles.ctaButtonText}>Start free trial</Text>
+            <Text style={[styles.ctaButtonText, { color: colors.onPrimary }]}>Start free trial</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -117,7 +120,7 @@ export default function PremiumUpgradeSheet({
             accessibilityRole="button"
             accessibilityLabel="Maybe later"
           >
-            <Text style={styles.laterButtonText}>Maybe later</Text>
+            <Text style={[styles.laterButtonText, { color: colors.textSecondary }]}>Maybe later</Text>
           </TouchableOpacity>
         </Pressable>
       </Pressable>
@@ -128,11 +131,9 @@ export default function PremiumUpgradeSheet({
 const styles = {
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end' as const,
   },
   sheetContent: {
-    backgroundColor: colors.light.bg,
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     padding: spacing.lg,
@@ -143,19 +144,16 @@ const styles = {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.light.border,
-    alignSelf: 'center',
+    alignSelf: 'center' as const,
     marginBottom: spacing.lg,
   },
   title: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
   },
   subtitle: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     marginTop: spacing.xs,
     marginBottom: spacing.lg,
@@ -165,8 +163,8 @@ const styles = {
     marginBottom: spacing.lg,
   },
   benefitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: spacing.md,
   },
   benefitEmoji: {
@@ -178,37 +176,30 @@ const styles = {
   benefitTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   benefitDescription: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   pricingCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.lg,
     alignItems: 'center',
     marginBottom: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.light.primary,
   },
   pricingPrice: {
     fontSize: typography.heading.fontSize,
     fontWeight: '700',
-    color: colors.light.primary,
     lineHeight: typography.heading.lineHeight,
   },
   pricingAlt: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.xs,
   },
   ctaButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
@@ -217,7 +208,6 @@ const styles = {
   ctaButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   laterButton: {
     paddingVertical: spacing.md,
@@ -225,6 +215,5 @@ const styles = {
   },
   laterButtonText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
   },
 } as const;

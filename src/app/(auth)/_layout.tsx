@@ -1,17 +1,18 @@
 import { Stack, Redirect } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useAuthStore } from '@/stores/authStore';
 import { DrawerProvider } from '@/contexts/DrawerContext';
 import DrawerOverlay from '@/components/DrawerOverlay';
 
 export default function AuthGroupLayout() {
+  const { colors } = useTheme();
   const { session, guestMode, initialized } = useAuthStore();
 
   if (!initialized) {
     return (
-      <View style={s.loader}>
-        <ActivityIndicator size="large" color={colors.light.primary} />
+      <View style={[s.loader, { backgroundColor: colors.bg }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -37,6 +38,5 @@ const s = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.light.bg,
   },
 });
