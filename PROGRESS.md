@@ -1,33 +1,30 @@
 # Daily English - Progress
 
-## Story 1.1: Project Initialization with Expo SDK — DONE
-
-Commit: `0eded53`
-
 ---
 
-## Story 1.1+: TypeScript Stabilization — DONE
+## 2026-05-21
 
-All 81 TypeScript errors across 19 files eliminated. Commit pending.
+### Story 1.1: Project Initialization with Expo SDK — DONE
+Commit: `0eded53`
 
-### Changes Made
+### TypeScript Stabilization — DONE
+Commit: `62141fc`
 
-**Type fixes (6 categories):**
-1. `mockData.ts` — `modeEntries: Record<ModeCode, WordModeEntry>` → `Partial<Record<ModeCode, WordModeEntry>>` (eliminates 18 TS2739 errors)
-2. `useAudioRecording.ts`, `asrService.ts` — Fixed expo-speech-recognition imports for SDK 54: `SpeechRecognition` → `ExpoSpeechRecognitionModule`, type-only imports for events, `hints` → `contextualStrings` (eliminates 6 TS2305/TS2724 errors)
-3. `lib/storage.ts` — MMKV v4 API: `new MMKV()` → `createMMKV()`, `.delete()` → `.remove()` (eliminates 1 TS2339 error)
-4. `conversationEngine.ts` — `currentStepIndex` → `currentStep`, added missing `hintLevel` and `wordsUsedThisSession` fields; `examStructure.ts` — fixed `ConversationStep` import path; `sessionStore.ts` — `.getState().set()` → `.setState()` (eliminates 3 errors)
-5. 11 component files — restored `as const` on plain style object literals for string literal narrowing; removed from `StyleSheet.create()` results where it caused TS1355 (eliminates 31 TS1355 errors)
-6. `sessionStore.ts` — setter signatures `(string) => void` → `(string | null) => void`; `JamAlongScreen.tsx` — script type handles `undefined`; `SkeletonScreens.tsx` — `width: DimensionValue` cast; `asrService.ts` — `.catch()` on void → try/catch (eliminates 7 remaining errors)
+**81 TypeScript errors eliminated across 19 files.**
 
-**Runtime fix (from earlier session):**
-- `metro.config.js` — Added `blockList` to exclude test files from Metro bundler (was causing `react-test-renderer` runtime crash)
-- `ReviewScreen.tsx` — Fixed `word.modeEntry.example_context` → `word.modeEntries?.[modeCode]?.example_context` (was causing runtime crash)
+Type fixes (6 categories):
+1. `mockData.ts` — `modeEntries: Record<ModeCode, WordModeEntry>` → `Partial<Record<ModeCode, WordModeEntry>>` (18 TS2739 errors)
+2. `useAudioRecording.ts`, `asrService.ts` — Fixed expo-speech-recognition imports for SDK 54: `SpeechRecognition` → `ExpoSpeechRecognitionModule`, type-only imports for events, `hints` → `contextualStrings` (6 TS2305/TS2724 errors)
+3. `lib/storage.ts` — MMKV v4 API: `new MMKV()` → `createMMKV()`, `.delete()` → `.remove()` (1 TS2339 error)
+4. `conversationEngine.ts` — `currentStepIndex` → `currentStep`, added missing fields; `examStructure.ts` — fixed `ConversationStep` import path; `sessionStore.ts` — `.getState().set()` → `.setState()` (3 errors)
+5. 11 component files — restored `as const` on plain style object literals for string literal narrowing; removed from `StyleSheet.create()` results where it caused TS1355 (31 TS1355 errors)
+6. `sessionStore.ts` — setter signatures `(string) => void` → `(string | null) => void`; `JamAlongScreen.tsx` — script type handles `undefined`; `SkeletonScreens.tsx` — `width: DimensionValue`; `asrService.ts` — `.catch()` on void → try/catch (7 remaining errors)
 
-### Verification
-- `npx tsc --noEmit` — 0 errors (was 81)
-- `npx jest` — 24 tests passing (unchanged)
-- App runs at localhost:8081 without crashes
+Runtime fixes:
+- `metro.config.js` — Added `blockList` to exclude test files from Metro bundler
+- `ReviewScreen.tsx` — Fixed `word.modeEntry.example_context` → `word.modeEntries?.[modeCode]?.example_context`
+
+Verification: `npx tsc --noEmit` 0 errors, `npx jest` 24 tests pass, app runs at localhost:8081
 
 ---
 
@@ -38,12 +35,6 @@ All 81 TypeScript errors across 19 files eliminated. Commit pending.
 Flow for each story: **spec → plan → implement → test → review → commit**
 
 ### Next: Story 1.2 — Supabase Backend Setup
-1. Write spec (or read existing if available)
-2. Plan tasks with acceptance criteria
-3. Implement incrementally (vertical slices)
-4. Test after each slice
-5. Review before commit
-6. Commit to GitHub
 
 ### Epic 1 remaining stories
 - 1-2: Supabase Backend Setup ← NEXT
