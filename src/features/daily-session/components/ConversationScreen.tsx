@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { router } from 'expo-router';
 import { colors, typography, spacing, radii } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import {
@@ -183,6 +184,7 @@ export default function ConversationScreen() {
         setTimeout(() => {
           saveCurrentSession();
           setCurrentStep('review');
+          router.push('/session/review');
         }, 2000);
       }
     },
@@ -233,7 +235,7 @@ export default function ConversationScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Something went wrong.</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => setCurrentStep('scene')}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => { setCurrentStep('scene'); router.push('/session/scene'); }}>
           <Text style={styles.backBtnText}>Go back</Text>
         </TouchableOpacity>
       </View>

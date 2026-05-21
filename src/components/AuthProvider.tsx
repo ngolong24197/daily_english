@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { colors } from '../constants/theme';
+import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '../stores/authStore';
+
+SplashScreen.preventAutoHideAsync();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const initialized = useAuthStore((s) => s.initialized);
@@ -10,12 +11,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useAuthStore.getState().initialize();
   }, []);
 
+  useEffect(() => {
+    if (initialized) {
+      SplashScreen.hideAsync();
+    }
+  }, [initialized]);
+
   if (!initialized) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.light.bg }}>
-        <ActivityIndicator size="large" color={colors.light.primary} />
-      </View>
-    );
+    return null;
   }
 
   return <>{children}</>;

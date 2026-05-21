@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
 import { colors, typography, spacing, radii } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { CompletedSession } from '@/stores/sessionStore';
@@ -62,15 +63,16 @@ export default function ReviewScreen() {
     if (!isPremium) {
       setShowAd(true);
     } else {
-      // Premium users go directly home
       resetSession();
       setCurrentStep('checkin');
+      router.replace('/(auth)/(tabs)');
     }
   };
 
   const handleAdContinue = () => {
     resetSession();
     setCurrentStep('checkin');
+    router.replace('/(auth)/(tabs)');
   };
 
   const handleAdUpgrade = () => {
@@ -80,19 +82,21 @@ export default function ReviewScreen() {
 
   const handleKeepTalking = () => {
     setCurrentStep('conversation');
+    router.push('/session/conversation');
   };
 
   const handlePracticeAgain = () => {
     resetSession();
     setCurrentStep('checkin');
+    router.push('/session/checkin');
   };
 
   const handleContinueToDaily = () => {
-    // Switch to daily practice mode and restart
     const { setExamPracticeMode } = useSessionStore.getState();
     setExamPracticeMode('daily');
     resetSession();
     setCurrentStep('checkin');
+    router.push('/session/checkin');
   };
 
   const today = new Date();

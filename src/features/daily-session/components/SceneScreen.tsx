@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
 import { colors, typography, spacing, radii } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { MockWord } from '@/services/mockData';
@@ -27,7 +28,7 @@ export default function SceneScreen() {
         <Text style={styles.errorText}>Something went wrong loading the scene.</Text>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => setCurrentStep('checkin')}
+          onPress={() => { setCurrentStep('checkin'); router.push('/session/checkin'); }}
         >
           <Text style={styles.backButtonText}>Go back</Text>
         </TouchableOpacity>
@@ -45,7 +46,7 @@ export default function SceneScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => setCurrentStep('checkin')}
+          onPress={() => { setCurrentStep('checkin'); router.push('/session/checkin'); }}
           accessibilityLabel="Go back to check-in"
           accessibilityRole="button"
         >
@@ -161,7 +162,7 @@ export default function SceneScreen() {
           onPress={() => {
             haptics.impactMedium();
             setPracticeFormat('conversation');
-            setCurrentStep('conversation');
+            setCurrentStep('conversation'); router.push('/session/conversation');
           }}
           accessibilityRole="button"
           accessibilityLabel="Step into the conversation"
@@ -176,7 +177,7 @@ export default function SceneScreen() {
               const script = getDefaultJamAlongScript(currentMode);
               setPracticeFormat('jamAlong');
               setJamAlongScriptId(script.id);
-              setCurrentStep('jamAlong');
+              setCurrentStep('jamAlong'); router.push('/session/jam-along');
             }}
             accessibilityRole="button"
             accessibilityLabel="Try Jam Along: fill in the gaps"

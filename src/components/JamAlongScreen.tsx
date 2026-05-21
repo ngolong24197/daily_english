@@ -9,6 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { router } from 'expo-router';
 import { colors, typography, spacing, radii } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
 import { getAsrErrorMessage } from '@/services/asrService';
@@ -180,7 +181,7 @@ export default function JamAlongScreen() {
     );
     setConversationComplete(true);
     saveCurrentSession();
-    setTimeout(() => setCurrentStep('review'), 2000);
+    setTimeout(() => { setCurrentStep('review'); router.push('/session/review'); }, 2000);
   }, [completedLines, userInputs]);
 
   const handleTextSend = () => {
@@ -211,6 +212,7 @@ export default function JamAlongScreen() {
   const handleBackToConversation = () => {
     setPracticeFormat('conversation');
     setCurrentStep('scene');
+    router.push('/session/scene');
   };
 
   if (!script) {

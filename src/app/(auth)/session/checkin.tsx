@@ -1,27 +1,23 @@
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, StyleSheet, Animated } from 'react-native';
 import { useState, useCallback, useEffect } from 'react';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography, spacing, radii } from '@/constants/theme';
 import { useSessionStore } from '@/stores/sessionStore';
-import { getSceneForMoodAndMode } from '@/services/supabaseDataService';
-import { preloadData } from '@/services/supabaseDataService';
+import { getSceneForMoodAndMode, preloadData } from '@/services/supabaseDataService';
 import { getAsrErrorMessage } from '@/services/asrService';
 import { useAudioRecording } from '@/hooks/useAudioRecording';
 import { useEntranceAnimation } from '@/hooks/useEntranceAnimation';
 import { useHaptics } from '@/hooks/useHaptics';
 import MicButton from '@/components/MicButton';
-import SceneScreen from '@/features/daily-session/components/SceneScreen';
-import ConversationScreen from '@/features/daily-session/components/ConversationScreen';
-import JamAlongScreen from '@/components/JamAlongScreen';
-import ReviewScreen from '@/features/daily-session/components/ReviewScreen';
 import { getReviewWordsForSession } from '@/services/situationalRepetition';
 import { initializeDemoProgress } from '@/services/wordProgress';
 import { getGreetingForMode, isExamMode } from '@/services/contextDetection';
 import { streakService } from '@/services/streakService';
 import { shouldShowWarmReEntry, getWarmReEntryMessage, recordSessionDate } from '@/services/warmReEntry';
-import OnboardingEasing, { isOnboardingComplete } from '@/components/OnboardingEasing';
 import { MoodLabels, phraseLabel } from '@/utils/accessibility';
 import { APP_CONFIG } from '@/constants/appConfig';
-import TrackSelectionScreen from './track-selection';
+import AppHeader from '@/components/AppHeader';
 
 const MOODS = [
   { key: 'good', emoji: '\u{1F60A}', label: 'Good' },
@@ -37,7 +33,7 @@ const PHRASES = [
   'Feeling good today',
 ];
 
-function CheckInScreen() {
+export default function CheckInRoute() {
   const [textResponse, setTextResponse] = useState('');
   const [showTextInput, setShowTextInput] = useState(false);
   const [asrMessage, setAsrMessage] = useState<string | null>(null);
@@ -56,7 +52,6 @@ function CheckInScreen() {
     currentMode,
     setCurrentMode,
     setContextChanges,
-    onboardingComplete,
     isExamMode: storeIsExamMode,
     examPracticeMode,
   } = useSessionStore();
@@ -67,19 +62,16 @@ function CheckInScreen() {
   const isExamModeFlag = isExamMode(currentMode);
   const isExamPractice = isExamModeFlag && examPracticeMode === 'exam';
 
-  // Initialize demo word progress, record streak, and check warm re-entry on first load
   useEffect(() => {
     preloadData();
     initializeDemoProgress(currentMode);
     streakService.recordSession();
     recordSessionDate();
 
-    // Show warm re-entry message if returning after 1+ days
     if (APP_CONFIG.features.enableWarmReEntry && shouldShowWarmReEntry()) {
       const message = getWarmReEntryMessage();
       if (message) {
         setWarmMessage(message);
-        // Auto-dismiss after 4 seconds
         setTimeout(() => setWarmMessage(null), 4000);
       }
     }
@@ -96,34 +88,25 @@ function CheckInScreen() {
     resetError,
   } = useAudioRecording({
     onAutoStop: () => {
-      // VAD detected silence — stop recording
       stopRecording();
     },
     onTranscription: (text) => {
-      // Final transcription from device-native speech recognition
       setAsrMessage(null);
       proceedToScene(text);
     },
   });
 
   const proceedToScene = useCallback((response: string) => {
-    // Get mode-aware scene
     const scene = getSceneForMoodAndMode(response, currentMode);
     setDayResponse(response);
     setCurrentScene(scene);
 
-    // Get review words for situational repetition
     const sessionWordIds = scene.newWords.map((w) => w.id);
-    const { contextChanges: changes } = getReviewWordsForSession(
-      currentMode,
-      2,
-      sessionWordIds
-    );
-
-    // Store context changes for display
+    const { contextChanges: changes } = getReviewWordsForSession(currentMode, 2, sessionWordIds);
     setContextChanges(changes);
 
     setCurrentStep('scene');
+    router.push('/session/scene');
   }, [currentMode, setDayResponse, setCurrentScene, setCurrentStep, setContextChanges]);
 
   const handleMoodSelect = (moodKey: string) => {
@@ -151,7 +134,6 @@ function CheckInScreen() {
 
   const handleMicPress = useCallback(async () => {
     if (recordingState === 'recording') {
-      // Stop recording — transcription is handled via onTranscription callback
       await stopRecording();
     } else if (recordingState === 'error') {
       resetError();
@@ -161,13 +143,9 @@ function CheckInScreen() {
     }
   }, [recordingState, stopRecording, startRecording, resetError]);
 
-  // Get mode-aware greeting
   const { greeting, prompt, promptSub } = getGreetingForMode(currentMode);
-
-  // Get mode label for display
   const modeLabel = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
 
-  // Exam mode: skip mood selection, go straight to conversation
   const handleExamStart = useCallback(() => {
     const examResponse = isExamPractice ? 'exam practice' : 'daily practice';
     const scene = getSceneForMoodAndMode(examResponse, currentMode);
@@ -175,18 +153,13 @@ function CheckInScreen() {
     setCurrentScene(scene);
 
     const sessionWordIds = scene.newWords.map((w) => w.id);
-    const { contextChanges: changes } = getReviewWordsForSession(
-      currentMode,
-      2,
-      sessionWordIds,
-    );
+    const { contextChanges: changes } = getReviewWordsForSession(currentMode, 2, sessionWordIds);
     setContextChanges(changes);
 
-    // Skip scene step and go directly to conversation in exam mode
     setCurrentStep('conversation');
+    router.push('/session/conversation');
   }, [currentMode, isExamPractice, setDayResponse, setCurrentScene, setCurrentStep, setContextChanges]);
 
-  // Exam mode check-in UI: structured start instead of casual mood selection
   if (isExamPractice) {
     const examType = currentMode === 'ielts' ? 'IELTS' : 'TOEIC';
     const examAccentColor = currentMode === 'ielts' ? '#3A6A8F' : '#8B6B3D';
@@ -195,177 +168,139 @@ function CheckInScreen() {
       : 'You will practice structured TOEIC speaking tasks with accuracy feedback. You will respond to business English scenarios.';
 
     return (
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={checkInStyles.container}
-      >
-        <View style={checkInStyles.trackLabel}>
-          <Text style={checkInStyles.trackLabelText}>{modeLabel}</Text>
-          <Text style={[checkInStyles.examModeLabel, { color: examAccentColor }]}>
-            {examType} Practice
-          </Text>
-        </View>
+      <SafeAreaView style={s.container} edges={['bottom']}>
+        <AppHeader title={`${examType} Practice`} showBackButton />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.content}>
+          <View style={s.trackLabel}>
+            <Text style={s.trackLabelText}>{modeLabel}</Text>
+            <Text style={[s.examModeLabel, { color: examAccentColor }]}>{examType} Practice</Text>
+          </View>
 
-        <View style={checkInStyles.promptArea}>
-          <Text style={checkInStyles.greeting}>{greeting}</Text>
-          <Text style={checkInStyles.prompt}>{prompt}</Text>
-          <Text style={checkInStyles.promptSub}>{promptSub}</Text>
-        </View>
+          <View style={s.promptArea}>
+            <Text style={s.greeting}>{greeting}</Text>
+            <Text style={s.prompt}>{prompt}</Text>
+            <Text style={s.promptSub}>{promptSub}</Text>
+          </View>
 
-        <View style={checkInStyles.examDescriptionCard}>
-          <Text style={[checkInStyles.examDescriptionTitle, { color: examAccentColor }]}>
-            {examType} Speaking Practice
-          </Text>
-          <Text style={checkInStyles.examDescriptionText}>
-            {examDescription}
-          </Text>
-        </View>
+          <View style={s.examDescriptionCard}>
+            <Text style={[s.examDescriptionTitle, { color: examAccentColor }]}>{examType} Speaking Practice</Text>
+            <Text style={s.examDescriptionText}>{examDescription}</Text>
+          </View>
 
-        <View style={checkInStyles.examStartArea}>
-          <TouchableOpacity
-            style={[checkInStyles.examStartButton, { backgroundColor: examAccentColor }]}
-            onPress={handleExamStart}
-            accessibilityRole="button"
-            accessibilityLabel="Begin practice"
-          >
-            <Text style={checkInStyles.examStartButtonText}>Begin Practice</Text>
-          </TouchableOpacity>
-          <Text style={checkInStyles.examStartSubtext}>
-            You can switch to daily practice mode in Settings.
-          </Text>
-        </View>
-      </KeyboardAvoidingView>
+          <View style={s.examStartArea}>
+            <TouchableOpacity
+              style={[s.examStartButton, { backgroundColor: examAccentColor }]}
+              onPress={handleExamStart}
+              accessibilityRole="button"
+              accessibilityLabel="Begin practice"
+            >
+              <Text style={s.examStartButtonText}>Begin Practice</Text>
+            </TouchableOpacity>
+            <Text style={s.examStartSubtext}>You can switch to daily practice mode in Settings.</Text>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={checkInStyles.container}
-    >
-      <View style={checkInStyles.trackLabel}>
-        <Text style={checkInStyles.trackLabelText}>{modeLabel}</Text>
-        {isExamModeFlag && (
-          <Text style={checkInStyles.examModeLabel}>{'\u{1F4DD}'} Exam Mode</Text>
+    <SafeAreaView style={s.container} edges={['bottom']}>
+      <AppHeader title="Daily English" showDrawerButton />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.content}>
+        <View style={s.trackLabel}>
+          <Text style={s.trackLabelText}>{modeLabel}</Text>
+          {isExamModeFlag && <Text style={s.examModeLabel}>{'\u{1F4DD}'} Exam Mode</Text>}
+        </View>
+
+        {warmMessage && (
+          <View style={s.warmBanner}>
+            <Text style={s.warmBannerText}>{warmMessage}</Text>
+          </View>
         )}
-      </View>
 
-      {/* Warm re-entry welcome banner */}
-      {warmMessage && (
-        <View style={checkInStyles.warmBanner}>
-          <Text style={checkInStyles.warmBannerText}>{warmMessage}</Text>
+        <Animated.View style={[s.promptArea, fadeIn, slideUp]}>
+          <Text style={s.greeting}>{greeting}</Text>
+          <Text style={s.prompt}>{prompt}</Text>
+          <Text style={s.promptSub}>{promptSub}</Text>
+        </Animated.View>
+
+        <View style={s.emojiRow}>
+          {MOODS.map((mood) => (
+            <TouchableOpacity
+              key={mood.key}
+              style={[s.emojiButton, selectedMood === mood.key && s.emojiButtonSelected]}
+              onPress={() => handleMoodSelect(mood.key)}
+              accessibilityLabel={MoodLabels[mood.key] ?? mood.label}
+              accessibilityRole="button"
+            >
+              <Text style={s.emojiText}>{mood.emoji}</Text>
+              <Text style={[s.emojiLabel, selectedMood === mood.key && s.emojiLabelSelected]}>{mood.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      )}
 
-      <Animated.View style={[checkInStyles.promptArea, fadeIn, slideUp]}>
-        <Text style={checkInStyles.greeting}>{greeting}</Text>
-        <Text style={checkInStyles.prompt}>{prompt}</Text>
-        <Text style={checkInStyles.promptSub}>{promptSub}</Text>
-      </Animated.View>
+        <View style={s.chipRow}>
+          {PHRASES.map((phrase) => (
+            <TouchableOpacity
+              key={phrase}
+              style={[s.phraseChip, selectedPhrase === phrase && s.phraseChipSelected]}
+              onPress={() => handlePhraseSelect(phrase)}
+              accessibilityLabel={phraseLabel(phrase)}
+              accessibilityRole="button"
+            >
+              <Text style={[s.phraseChipText, selectedPhrase === phrase && s.phraseChipTextSelected]}>{phrase}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <View style={checkInStyles.emojiRow}>
-        {MOODS.map((mood) => (
+        {asrMessage && (
+          <View style={s.asrBanner}>
+            <Text style={s.asrBannerText}>{asrMessage}</Text>
+          </View>
+        )}
+
+        <View style={s.micArea}>
+          <MicButton recordingState={recordingState} audioLevel={audioLevel} onPress={handleMicPress} />
+        </View>
+
+        {showTextInput ? (
+          <View style={s.textInputArea}>
+            <TextInput
+              style={s.textInput}
+              placeholder="Type how your day was..."
+              placeholderTextColor={colors.light.textMuted}
+              value={textResponse}
+              onChangeText={setTextResponse}
+              onSubmitEditing={handleTextSubmit}
+              returnKeyType="send"
+              autoFocus
+            />
+            <TouchableOpacity style={s.sendButton} onPress={handleTextSubmit} accessibilityLabel="Send message" accessibilityRole="button">
+              <Text style={s.sendButtonText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
           <TouchableOpacity
-            key={mood.key}
-            style={[
-              checkInStyles.emojiButton,
-              selectedMood === mood.key && checkInStyles.emojiButtonSelected,
-            ]}
-            onPress={() => handleMoodSelect(mood.key)}
-            accessibilityLabel={MoodLabels[mood.key] ?? mood.label}
+            style={s.typeInsteadButton}
+            onPress={() => { haptics.impactLight(); setShowTextInput(true); }}
+            accessibilityLabel="Type your response instead"
             accessibilityRole="button"
           >
-            <Text style={checkInStyles.emojiText}>{mood.emoji}</Text>
-            <Text
-              style={[
-                checkInStyles.emojiLabel,
-                selectedMood === mood.key && checkInStyles.emojiLabelSelected,
-              ]}
-            >
-              {mood.label}
-            </Text>
+            <Text style={s.typeInsteadText}>Or type your response</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={checkInStyles.chipRow}>
-        {PHRASES.map((phrase) => (
-          <TouchableOpacity
-            key={phrase}
-            style={[
-              checkInStyles.phraseChip,
-              selectedPhrase === phrase && checkInStyles.phraseChipSelected,
-            ]}
-            onPress={() => handlePhraseSelect(phrase)}
-            accessibilityLabel={phraseLabel(phrase)}
-            accessibilityRole="button"
-          >
-            <Text
-              style={[
-                checkInStyles.phraseChipText,
-                selectedPhrase === phrase && checkInStyles.phraseChipTextSelected,
-              ]}
-            >
-              {phrase}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* ASR status message */}
-      {asrMessage && (
-        <View style={checkInStyles.asrBanner}>
-          <Text style={checkInStyles.asrBannerText}>{asrMessage}</Text>
-        </View>
-      )}
-
-      {/* Mic button for speaking */}
-      <View style={checkInStyles.micArea}>
-        <MicButton
-          recordingState={recordingState}
-          audioLevel={audioLevel}
-          onPress={handleMicPress}
-        />
-      </View>
-
-      {/* Text input fallback */}
-      {showTextInput ? (
-        <View style={checkInStyles.textInputArea}>
-          <TextInput
-            style={checkInStyles.textInput}
-            placeholder="Type how your day was..."
-            placeholderTextColor={colors.light.textMuted}
-            value={textResponse}
-            onChangeText={setTextResponse}
-            onSubmitEditing={handleTextSubmit}
-            returnKeyType="send"
-            autoFocus
-          />
-          <TouchableOpacity style={checkInStyles.sendButton} onPress={handleTextSubmit} accessibilityLabel="Send message" accessibilityRole="button">
-            <Text style={checkInStyles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity
-          style={checkInStyles.typeInsteadButton}
-          onPress={() => {
-            haptics.impactLight();
-            setShowTextInput(true);
-          }}
-          accessibilityLabel="Type your response instead"
-          accessibilityRole="button"
-        >
-          <Text style={checkInStyles.typeInsteadText}>Or type your response</Text>
-        </TouchableOpacity>
-      )}
-    </KeyboardAvoidingView>
+        )}
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-const checkInStyles = {
+const s = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.light.bg,
+  },
+  content: {
+    flex: 1,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -400,7 +335,7 @@ const checkInStyles = {
   },
   prompt: {
     fontSize: typography.display.fontSize,
-    fontWeight: typography.display.fontWeight,
+    fontWeight: typography.display.fontWeight as any,
     color: colors.light.textPrimary,
     lineHeight: typography.display.lineHeight,
     textAlign: 'center',
@@ -432,9 +367,7 @@ const checkInStyles = {
     borderColor: colors.light.primary,
     backgroundColor: 'rgba(91, 140, 90, 0.08)',
   },
-  emojiText: {
-    fontSize: 24,
-  },
+  emojiText: { fontSize: 24 },
   emojiLabel: {
     fontSize: typography.caption.fontSize,
     color: colors.light.textMuted,
@@ -457,17 +390,13 @@ const checkInStyles = {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  phraseChipSelected: {
-    backgroundColor: colors.light.primary,
-  },
+  phraseChipSelected: { backgroundColor: colors.light.primary },
   phraseChipText: {
     fontSize: typography.body.fontSize,
     color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
-  phraseChipTextSelected: {
-    color: '#FFFFFF',
-  },
+  phraseChipTextSelected: { color: '#FFFFFF' },
   asrBanner: {
     backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: radii.md,
@@ -482,9 +411,7 @@ const checkInStyles = {
     lineHeight: typography.hint.lineHeight,
     textAlign: 'center',
   },
-  micArea: {
-    marginBottom: spacing.md,
-  },
+  micArea: { marginBottom: spacing.md },
   textInputArea: {
     flexDirection: 'row',
     width: '100%',
@@ -510,12 +437,10 @@ const checkInStyles = {
   },
   sendButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontWeight: typography.button.fontWeight as any,
     color: '#FFFFFF',
   },
-  typeInsteadButton: {
-    paddingVertical: spacing.md,
-  },
+  typeInsteadButton: { paddingVertical: spacing.md },
   warmBanner: {
     backgroundColor: 'rgba(91, 140, 90, 0.12)',
     borderRadius: radii.md,
@@ -556,10 +481,7 @@ const checkInStyles = {
     color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
   },
-  examStartArea: {
-    alignItems: 'center',
-    width: '100%',
-  },
+  examStartArea: { alignItems: 'center', width: '100%' },
   examStartButton: {
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
@@ -569,7 +491,7 @@ const checkInStyles = {
   },
   examStartButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontWeight: typography.button.fontWeight as any,
     color: '#FFFFFF',
   },
   examStartSubtext: {
@@ -578,54 +500,4 @@ const checkInStyles = {
     marginTop: spacing.sm,
     textAlign: 'center',
   },
-} as const;
-
-export default function HomeScreen() {
-  const { currentStep, onboardingComplete } = useSessionStore();
-  const [showOnboardingEasing, setShowOnboardingEasing] = useState(false);
-
-  // If onboarding is not complete, show track selection
-  if (!onboardingComplete) {
-    return <TrackSelectionScreen />;
-  }
-
-  // Show onboarding easing for new users (first time through check-in)
-  if (APP_CONFIG.features.enableOnboardingEasing && !isOnboardingComplete() && currentStep === 'checkin') {
-    if (!showOnboardingEasing) {
-      return (
-        <OnboardingEasing
-          onComplete={() => setShowOnboardingEasing(true)}
-          onStep3Select={(moodKey) => {
-            // User selected a mood during onboarding — proceed to scene
-            const { setSelectedMood, setDayResponse, setCurrentScene, setCurrentStep, currentMode, setContextChanges } = useSessionStore.getState();
-            setSelectedMood(moodKey);
-            setDayResponse(moodKey);
-            const scene = getSceneForMoodAndMode(moodKey, currentMode);
-            setCurrentScene(scene);
-            const sessionWordIds = scene.newWords.map((w) => w.id);
-            const { contextChanges: changes } = getReviewWordsForSession(currentMode, 2, sessionWordIds);
-            setContextChanges(changes);
-            setCurrentStep('scene');
-          }}
-          onStep4MicPress={() => {
-            // User tapped mic during onboarding — no-op, will advance to step 5
-          }}
-        />
-      );
-    }
-  }
-
-  switch (currentStep) {
-    case 'scene':
-      return <SceneScreen />;
-    case 'conversation':
-      return <ConversationScreen />;
-    case 'jamAlong':
-      return <JamAlongScreen />;
-    case 'review':
-      return <ReviewScreen />;
-    case 'checkin':
-    default:
-      return <CheckInScreen />;
-  }
-}
+});
