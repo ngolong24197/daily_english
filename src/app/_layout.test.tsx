@@ -45,6 +45,10 @@ jest.mock('../utils/accessibility', () => ({
   NavigationLabels: {},
 }));
 
+jest.mock('../components/ErrorBoundary', () => ({
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 jest.mock('../constants/theme', () => ({
   colors: {
     light: {

@@ -63,7 +63,11 @@ export function wordChipLabel(word: string, partOfSpeech: string): string {
  */
 export const NavigationLabels: Record<string, string> = {
   '/': "Today's session",
-  '/jam-along': 'Jam Along practice',
+  '/session/checkin': 'Start a session',
+  '/session/scene': "Today's scene",
+  '/session/conversation': 'Conversation practice',
+  '/session/jam-along': 'Jam Along practice',
+  '/session/review': 'Session review',
   '/history': 'Conversation history',
   '/words': 'My words collection',
   '/settings': 'Settings',
