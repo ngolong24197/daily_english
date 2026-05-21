@@ -95,3 +95,42 @@ Flow for each story: **spec → plan → implement → test → review → commi
 - Each story/phase on its own branch + PR for review before merge
 - Guest mode: unauthenticated users can use the full app with local data
 - Auth methods: magic link, email/password, OAuth (Google/Apple)
+
+---
+
+## 2026-05-22
+
+### Story 1.4: App Shell and Navigation — Implementation Complete
+
+**3 commits on branch `feature/story-1.4-app-shell-navigation` (PR #2):**
+
+**Phase 1: Bottom Tabs + Drawer Modal**
+- Installed `@react-navigation/bottom-tabs`
+- Created `(auth)/(tabs)/_layout.tsx` with 4 tabs (Today, History, Words, Settings)
+- Moved history, words, settings, index screens into `(tabs)/` group
+- Replaced Drawer navigator with Stack + DrawerProvider + DrawerOverlay
+- Created `src/contexts/DrawerContext.tsx` (useDrawer hook)
+- Created `src/components/DrawerOverlay.tsx` (reanimated slide-in from right)
+- Created `src/components/AppHeader.tsx` (shared header with drawer toggle + back button)
+
+**Phase 2: Session Flow as Routes**
+- Created `(auth)/session/` route group with Stack layout
+- Extracted CheckInScreen into `session/checkin.tsx` with route-based navigation
+- Created route wrappers: `session/scene.tsx`, `session/conversation.tsx`, `session/jam-along.tsx`, `session/review.tsx`
+- Refactored `(tabs)/index.tsx` to redirect to `/session/checkin` or show TrackSelectionScreen
+- All `setCurrentStep()` calls now paired with `router.push()` for route navigation
+- SceneScreen, ConversationScreen, JamAlongScreen, ReviewScreen updated with `router.push()` calls
+
+**Phase 3-5: Deep Linking, Splash Screen, Error Boundary, Headers**
+- Deep links work via `dailyenglish://` scheme (expo-router auto-maps routes)
+- `expo-splash-screen` replaces ActivityIndicator in AuthProvider
+- `src/components/ErrorBoundary.tsx` wraps root layout for crash recovery
+- Tabs layout shows headers with drawer toggle button via useDrawer()
+- Updated NavigationLabels in accessibility.ts for new route paths
+
+**Verification:** `npx tsc --noEmit` 0 errors, `npx jest` 29 tests pass
+
+### Epic 1 remaining stories
+- 1-5: Design System Tokens and Theming
+- 1-6: Core Shared Components
+- 1-7: Local Storage Setup

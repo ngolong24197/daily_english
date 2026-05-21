@@ -22,8 +22,8 @@ export const APP_CONFIG = {
   /** Bundle identifier */
   bundleIdentifier: 'com.dailyenglish.app',
 
-  /** Splash screen background color */
-  splashBackgroundColor: '#FFFBF5',
+  /** Splash screen background color — must match theme light.bg */
+  splashBackgroundColor: '#FFFBF5' as const,
 
   /** Android permissions required */
   androidPermissions: {
