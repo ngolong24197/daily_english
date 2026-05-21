@@ -21,7 +21,7 @@ import { shouldShowWarmReEntry, getWarmReEntryMessage, recordSessionDate } from 
 import OnboardingEasing, { isOnboardingComplete } from '@/components/OnboardingEasing';
 import { MoodLabels, phraseLabel } from '@/utils/accessibility';
 import { APP_CONFIG } from '@/constants/appConfig';
-import TrackSelectionScreen from './track-selection';
+import TrackSelectionScreen from '../track-selection';
 
 const MOODS = [
   { key: 'good', emoji: '\u{1F60A}', label: 'Good' },
