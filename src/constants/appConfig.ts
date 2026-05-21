@@ -1,3 +1,5 @@
+import { colors } from './theme';
+
 /**
  * App Configuration — Central place for app-wide constants.
  *
@@ -22,8 +24,8 @@ export const APP_CONFIG = {
   /** Bundle identifier */
   bundleIdentifier: 'com.dailyenglish.app',
 
-  /** Splash screen background color — must match theme light.bg */
-  splashBackgroundColor: '#FFFBF5' as const,
+  /** Splash screen background color — always light (splash shows before theme resolves) */
+  splashBackgroundColor: colors.light.bg,
 
   /** Android permissions required */
   androidPermissions: {

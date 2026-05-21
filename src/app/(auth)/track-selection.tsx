@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import type { ModeCode } from '@/types';
 import { MODES } from '@/constants/modes';
 import { useSessionStore } from '@/stores/sessionStore';
@@ -58,6 +59,7 @@ const TRACK_CARDS: {
 ];
 
 export default function TrackSelectionScreen() {
+  const { colors } = useTheme();
   const { currentMode, setCurrentMode } = useSessionStore();
 
   const handleTrackSelect = (trackCode: ModeCode) => {
@@ -69,7 +71,7 @@ export default function TrackSelectionScreen() {
       Alert.alert(
         `${track.display_name} Track`,
         trackCode === 'ielts' || trackCode === 'toeic'
-          ? `${track.display_name} mode includes accuracy feedback and timed practice. This is different from the daily conversation — it’s structured practice for your exam.\n\nYou can still switch tracks anytime from Settings.`
+          ? `${track.display_name} mode includes accuracy feedback and timed practice. This is different from the daily conversation — it's structured practice for your exam.\n\nYou can still switch tracks anytime from Settings.`
           : `${track.display_name} track offers specialized vocabulary and contexts.\n\nYou can switch tracks anytime from Settings.`,
         [
           { text: 'Cancel', style: 'cancel' },
@@ -92,12 +94,12 @@ export default function TrackSelectionScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.bg }]}
       contentContainerStyle={styles.contentContainer}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>What brings you here?</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>What brings you here?</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           Choose a track that fits your life. You can change it anytime.
         </Text>
       </View>
@@ -111,7 +113,8 @@ export default function TrackSelectionScreen() {
               key={card.code}
               style={[
                 styles.trackCard,
-                isSelected && styles.trackCardSelected,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                isSelected && { borderColor: colors.primary, backgroundColor: colors.primarySubtle },
               ]}
               onPress={() => handleTrackSelect(card.code)}
               accessibilityLabel={`${card.title} track: ${card.description}`}
@@ -124,18 +127,19 @@ export default function TrackSelectionScreen() {
                   <Text
                     style={[
                       styles.trackCardTitle,
-                      isSelected && styles.trackCardTitleSelected,
+                      { color: colors.textPrimary },
+                      isSelected && { color: colors.primary },
                     ]}
                   >
                     {card.title}
                   </Text>
                   {mode.is_premium && (
-                    <Text style={styles.premiumBadge}>Premium</Text>
+                    <Text style={[styles.premiumBadge, { color: colors.secondary }]}>Premium</Text>
                   )}
                 </View>
                 {isSelected && (
-                  <View style={styles.selectedCheckmark}>
-                    <Text style={styles.selectedCheckmarkText}>{'✓'}</Text>
+                  <View style={[styles.selectedCheckmark, { backgroundColor: colors.primary }]}>
+                    <Text style={[styles.selectedCheckmarkText, { color: colors.onPrimary }]}>{'✓'}</Text>
                   </View>
                 )}
               </View>
@@ -143,18 +147,20 @@ export default function TrackSelectionScreen() {
               <Text
                 style={[
                   styles.trackCardDescription,
-                  isSelected && styles.trackCardDescriptionSelected,
+                  { color: colors.textSecondary },
+                  isSelected && { color: colors.textPrimary },
                 ]}
               >
                 {card.description}
               </Text>
 
-              <View style={styles.exampleContainer}>
-                <Text style={styles.exampleLabel}>Example: </Text>
+              <View style={[styles.exampleContainer, { backgroundColor: colors.primarySubtle }]}>
+                <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>Example: </Text>
                 <Text
                   style={[
                     styles.exampleSentence,
-                    isSelected && styles.exampleSentenceSelected,
+                    { color: colors.primary },
+                    isSelected && { color: colors.primaryHover },
                   ]}
                 >
                   {card.exampleSentence}
@@ -168,18 +174,18 @@ export default function TrackSelectionScreen() {
       {currentMode && (
         <View style={styles.confirmSection}>
           <TouchableOpacity
-            style={styles.confirmButton}
+            style={[styles.confirmButton, { backgroundColor: colors.primary }]}
             onPress={() => {
               storage.set(ONBOARDING_COMPLETE_KEY, 'true');
             }}
             accessibilityLabel="Continue with selected track"
             accessibilityRole="button"
           >
-            <Text style={styles.confirmButtonText}>
+            <Text style={[styles.confirmButtonText, { color: colors.onPrimary }]}>
               Continue with {MODES[currentMode].display_name}
             </Text>
           </TouchableOpacity>
-          <Text style={styles.confirmNote}>
+          <Text style={[styles.confirmNote, { color: colors.textMuted }]}>
             You can switch tracks anytime from Settings.
           </Text>
         </View>
@@ -191,7 +197,6 @@ export default function TrackSelectionScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   contentContainer: {
     paddingHorizontal: spacing.md,
@@ -205,13 +210,11 @@ const styles = {
   title: {
     fontSize: typography.display.fontSize,
     fontWeight: typography.display.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.display.lineHeight,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     marginTop: spacing.sm,
@@ -220,15 +223,9 @@ const styles = {
     gap: spacing.md,
   },
   trackCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
     padding: spacing.lg,
     borderWidth: 2,
-    borderColor: colors.light.border,
-  },
-  trackCardSelected: {
-    borderColor: colors.light.primary,
-    backgroundColor: 'rgba(91, 140, 90, 0.05)',
   },
   trackCardHeader: {
     flexDirection: 'row',
@@ -245,68 +242,50 @@ const styles = {
   trackCardTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
-  },
-  trackCardTitleSelected: {
-    color: colors.light.primary,
   },
   premiumBadge: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: colors.light.secondary,
     marginTop: 2,
   },
   selectedCheckmark: {
     width: 24,
     height: 24,
     borderRadius: radii.full,
-    backgroundColor: colors.light.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedCheckmarkText: {
-    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '700',
   },
   trackCardDescription: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     marginBottom: spacing.md,
-  },
-  trackCardDescriptionSelected: {
-    color: colors.light.textPrimary,
   },
   exampleContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   exampleLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '500',
   },
   exampleSentence: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.primary,
     fontStyle: 'italic',
     flex: 1,
-  },
-  exampleSentenceSelected: {
-    color: colors.light.primaryHover,
   },
   confirmSection: {
     marginTop: spacing.xl,
     alignItems: 'center',
   },
   confirmButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -316,11 +295,9 @@ const styles = {
   confirmButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   confirmNote: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textAlign: 'center',
     marginTop: spacing.md,
   },

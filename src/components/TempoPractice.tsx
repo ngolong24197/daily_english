@@ -13,7 +13,8 @@
 
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { TempoSupportLevel } from '@/stores/sessionStore';
 
@@ -29,6 +30,7 @@ interface TempoPracticeProps {
 }
 
 export default function TempoPractice({ visible }: TempoPracticeProps) {
+  const { colors } = useTheme();
   const { tempoSupportLevel, setTempoSupportLevel, toastMessage } = useSessionStore();
   const [showDescription, setShowDescription] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -69,29 +71,29 @@ export default function TempoPractice({ visible }: TempoPracticeProps) {
     <>
       {/* Support level toggle button */}
       <TouchableOpacity
-        style={tempoStyles.toggleButton}
+        style={[tempoStyles.toggleButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={cycleLevel}
         onLongPress={() => setShowDescription(!showDescription)}
         accessibilityLabel={`Support level: ${currentLevel.label}. Tap to change.`}
         accessibilityRole="button"
       >
         <Text style={tempoStyles.toggleIcon}>{currentLevel.icon}</Text>
-        <Text style={tempoStyles.toggleLabel}>{currentLevel.label}</Text>
+        <Text style={[tempoStyles.toggleLabel, { color: colors.textSecondary }]}>{currentLevel.label}</Text>
       </TouchableOpacity>
 
       {/* Description tooltip */}
       {showDescription && (
-        <View style={tempoStyles.descriptionTooltip}>
-          <Text style={tempoStyles.descriptionTitle}>Support Level: {currentLevel.label}</Text>
-          <Text style={tempoStyles.descriptionText}>{currentLevel.description}</Text>
-          <Text style={tempoStyles.descriptionHint}>Tap to cycle. Long-press for details.</Text>
+        <View style={[tempoStyles.descriptionTooltip, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadow }]}>
+          <Text style={[tempoStyles.descriptionTitle, { color: colors.textPrimary }]}>Support Level: {currentLevel.label}</Text>
+          <Text style={[tempoStyles.descriptionText, { color: colors.textSecondary }]}>{currentLevel.description}</Text>
+          <Text style={[tempoStyles.descriptionHint, { color: colors.textMuted }]}>Tap to cycle. Long-press for details.</Text>
         </View>
       )}
 
       {/* Toast notification for level change */}
       {toastMessage && (
-        <Animated.View style={[tempoStyles.toast, { opacity: fadeAnim }]}>
-          <Text style={tempoStyles.toastText}>{toastMessage}</Text>
+        <Animated.View style={[tempoStyles.toast, { backgroundColor: colors.surface, borderColor: colors.primary, opacity: fadeAnim }]}>
+          <Text style={[tempoStyles.toastText, { color: colors.primary }]}>{toastMessage}</Text>
         </Animated.View>
       )}
     </>
@@ -143,9 +145,7 @@ const tempoStyles = {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: radii.full,
-    backgroundColor: colors.light.surface,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   toggleIcon: {
     fontSize: 14,
@@ -153,19 +153,15 @@ const tempoStyles = {
   toggleLabel: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600' as const,
-    color: colors.light.textSecondary,
   },
   descriptionTooltip: {
     position: 'absolute' as const,
     top: 44,
     right: 0,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.border,
     width: 260,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -175,18 +171,15 @@ const tempoStyles = {
   descriptionTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600' as const,
-    color: colors.light.textPrimary,
     marginBottom: spacing.xs,
   },
   descriptionText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginBottom: spacing.sm,
   },
   descriptionHint: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     fontStyle: 'italic' as const,
   },
   toast: {
@@ -194,18 +187,15 @@ const tempoStyles = {
     top: 50,
     left: '50%' as const,
     transform: [{ translateX: -130 }],
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.primary,
     width: 260,
     zIndex: 200,
   },
   toastText: {
     fontSize: typography.body.fontSize,
-    color: colors.light.primary,
     fontWeight: '600' as const,
     textAlign: 'center' as const,
   },

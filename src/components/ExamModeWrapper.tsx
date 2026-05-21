@@ -9,7 +9,8 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii, modeColors } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import type { ModeCode } from '../types';
 
 interface ExamModeWrapperProps {
@@ -30,9 +31,10 @@ export default function ExamModeWrapper({
   showFormalIndicator = true,
   children,
 }: ExamModeWrapperProps) {
+  const { colors } = useTheme();
   const isIELTS = modeCode === 'ielts';
   const examLabel = isIELTS ? 'IELTS Practice' : 'TOEIC Practice';
-  const accentColor = isIELTS ? '#3A6A8F' : '#8B6B3D';
+  const accentColor = isIELTS ? modeColors.ielts.accent : modeColors.toeic.accent;
 
   const formatTimer = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -41,21 +43,21 @@ export default function ExamModeWrapper({
   };
 
   const getTimerColor = (seconds: number): string => {
-    if (seconds <= 10) return '#D44'; // Red for last 10 seconds
-    if (seconds <= 30) return '#C49564'; // Amber for last 30 seconds
+    if (seconds <= 10) return colors.danger; // Red for last 10 seconds
+    if (seconds <= 30) return colors.secondary; // Amber for last 30 seconds
     return accentColor;
   };
 
   return (
     <View style={styles.container}>
       {/* Exam Banner */}
-      <View style={[styles.banner, { backgroundColor: isIELTS ? 'rgba(58, 106, 143, 0.08)' : 'rgba(139, 107, 61, 0.08)' }]}>
+      <View style={[styles.banner, { backgroundColor: isIELTS ? modeColors.ielts.accentSurface : modeColors.toeic.accentSurface }]}>
         <View style={styles.bannerLeft}>
           <Text style={[styles.bannerLabel, { color: accentColor }]}>
             {examLabel}
           </Text>
           {showFormalIndicator && (
-            <Text style={[styles.formalIndicator, { color: accentColor }]}>
+            <Text style={[styles.formalIndicator, { color: accentColor, backgroundColor: colors.overlayLight }]}>
               Formal Mode
             </Text>
           )}
@@ -111,7 +113,6 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     fontWeight: '500',
     lineHeight: typography.caption.lineHeight,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: radii.full,

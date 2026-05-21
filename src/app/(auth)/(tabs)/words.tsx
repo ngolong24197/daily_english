@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { useState, useEffect } from 'react';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import { wordProgressStore, type MasteryLevel } from '@/services/wordProgress';
 import { type MockWord } from '@/services/mockData';
@@ -14,24 +15,24 @@ import { MyWordsEmptyState } from '@/components/SkeletonScreens';
 import { wordChipLabel } from '@/utils/accessibility';
 import type { ModeCode } from '@/types';
 
-const MASTERY_CONFIG: Record<MasteryLevel, { emoji: string; label: string; description: string; color: string }> = {
+const MASTERY_CONFIG: Record<MasteryLevel, { emoji: string; label: string; description: string; colorKey: string }> = {
   seed: {
     emoji: '\u{1F331}',
     label: 'Seeds',
     description: 'Words you have seen',
-    color: colors.light.textSecondary,
+    colorKey: 'textSecondary',
   },
   sprout: {
     emoji: '\u{1F33F}',
     label: 'Sprouts',
     description: 'Words you have used',
-    color: colors.light.primary,
+    colorKey: 'primary',
   },
   bloom: {
     emoji: '\u{1F33A}',
     label: 'Blooms',
     description: 'Words you have mastered',
-    color: colors.light.accentWarm,
+    colorKey: 'accentWarm',
   },
 };
 
@@ -45,6 +46,7 @@ const MODE_FILTERS: { code: ModeCode | 'all'; label: string }[] = [
 ];
 
 export default function WordsScreen() {
+  const { colors } = useTheme();
   const { completedSessions, currentMode } = useSessionStore();
   const [selectedWord, setSelectedWord] = useState<MockWord | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,25 +152,25 @@ export default function WordsScreen() {
   // Empty state
   if (completedSessions.length === 0 && allProgress.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <MyWordsEmptyState />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View style={[fadeIn, slideUp]}>
-        <Text style={styles.headerTitle}>My Words</Text>
-        <Text style={styles.headerSub}>{totalWords} word{totalWords !== 1 ? 's' : ''} learned</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>My Words</Text>
+        <Text style={[styles.headerSub, { color: colors.textSecondary }]}>{totalWords} word{totalWords !== 1 ? 's' : ''} learned</Text>
 
         {/* Search */}
         <View style={styles.searchRow}>
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]}
             placeholder="Search words..."
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             accessibilityLabel="Search words"
@@ -184,7 +186,8 @@ export default function WordsScreen() {
                 key={filter.code}
                 style={[
                   styles.filterChip,
-                  isActive && styles.filterChipActive,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  isActive && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
                 onPress={() => {
                   haptics.selectionChanged();
@@ -196,7 +199,8 @@ export default function WordsScreen() {
                 <Text
                   style={[
                     styles.filterChipText,
-                    isActive && styles.filterChipTextActive,
+                    { color: colors.textSecondary },
+                    isActive && { color: colors.onPrimary },
                   ]}
                 >
                   {filter.label}
@@ -217,10 +221,10 @@ export default function WordsScreen() {
               <View style={styles.masteryHeader}>
                 <Text style={styles.masteryEmoji}>{config.emoji}</Text>
                 <View style={styles.masteryHeaderText}>
-                  <Text style={styles.masteryLabel}>{config.label}</Text>
-                  <Text style={styles.masteryDescription}>{config.description}</Text>
+                  <Text style={[styles.masteryLabel, { color: colors.textPrimary }]}>{config.label}</Text>
+                  <Text style={[styles.masteryDescription, { color: colors.textSecondary }]}>{config.description}</Text>
                 </View>
-                <Text style={styles.masteryCount}>{words.length}</Text>
+                <Text style={[styles.masteryCount, { color: colors.textMuted }]}>{words.length}</Text>
               </View>
               <View style={styles.wordList}>
                 {words.map(({ word, contexts, timesUsed }) => {
@@ -228,14 +232,14 @@ export default function WordsScreen() {
                   return (
                     <TouchableOpacity
                       key={word.id}
-                      style={styles.wordCard}
+                      style={[styles.wordCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                       onPress={() => setSelectedWord(word)}
                       accessibilityLabel={`${word.lemma}, tap to explore`}
                       accessibilityRole="button"
                     >
                       <View style={styles.wordCardLeft}>
-                        <Text style={styles.wordLemma}>{word.lemma}</Text>
-                        <Text style={styles.wordContext} numberOfLines={1}>
+                        <Text style={[styles.wordLemma, { color: colors.textPrimary }]}>{word.lemma}</Text>
+                        <Text style={[styles.wordContext, { color: colors.textSecondary }]} numberOfLines={1}>
                           {entry.example_context}
                         </Text>
                       </View>
@@ -256,7 +260,7 @@ export default function WordsScreen() {
                         )}
                         {/* Usage count (premium feature indicator) */}
                         {hasDetailedStats && timesUsed > 0 ? (
-                          <Text style={styles.timesUsed}>
+                          <Text style={[styles.timesUsed, { color: colors.textMuted }]}>
                             {timesUsed}x
                           </Text>
                         ) : !hasDetailedStats && timesUsed > 0 ? (
@@ -273,11 +277,11 @@ export default function WordsScreen() {
 
         {/* Premium stats upgrade prompt for free users */}
         {!hasDetailedStats && totalWords > 0 && (
-          <View style={styles.premiumStatsCard}>
+          <View style={[styles.premiumStatsCard, { backgroundColor: colors.surface, borderColor: colors.secondary }]}>
             <Text style={styles.premiumStatsEmoji}>{'\u{1F4CA}'}</Text>
             <View style={styles.premiumStatsText}>
-              <Text style={styles.premiumStatsTitle}>Upgrade for detailed stats</Text>
-              <Text style={styles.premiumStatsDesc}>
+              <Text style={[styles.premiumStatsTitle, { color: colors.textPrimary }]}>Upgrade for detailed stats</Text>
+              <Text style={[styles.premiumStatsDesc, { color: colors.textSecondary }]}>
                 See usage frequency, contexts used, and mastery progress for each word.
               </Text>
             </View>
@@ -300,7 +304,6 @@ export default function WordsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   content: {
     paddingHorizontal: spacing.md,
@@ -319,13 +322,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: '500',
-    color: colors.light.textPrimary,
     textAlign: 'center',
     lineHeight: typography.heading.lineHeight,
   },
   emptySub: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.sm,
     textAlign: 'center',
     lineHeight: typography.body.lineHeight,
@@ -333,13 +334,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
     marginTop: spacing.md,
   },
   headerSub: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     marginTop: spacing.xs,
     marginBottom: spacing.md,
@@ -348,39 +347,26 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   searchInput: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   filterRow: {
     flexDirection: 'row',
     marginBottom: spacing.md,
   },
   filterChip: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     marginRight: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
-  },
-  filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
   },
   filterChipText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     fontWeight: '500',
-  },
-  filterChipTextActive: {
-    color: '#FFFFFF',
   },
   masteryGroup: {
     marginTop: spacing.lg,
@@ -400,31 +386,26 @@ const styles = StyleSheet.create({
   masteryLabel: {
     fontSize: typography.subheading.fontSize,
     fontWeight: typography.subheading.fontWeight as any,
-    color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
   },
   masteryDescription: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
   },
   masteryCount: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '600',
-    color: colors.light.textMuted,
   },
   wordList: {
     gap: spacing.sm,
   },
   wordCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   wordCardLeft: {
     flex: 1,
@@ -432,12 +413,10 @@ const styles = StyleSheet.create({
   wordLemma: {
     fontSize: typography.body.fontSize,
     fontWeight: '500',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   wordContext: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
@@ -457,21 +436,18 @@ const styles = StyleSheet.create({
   },
   timesUsed: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '500',
   },
   premiumLockText: {
     fontSize: typography.caption.fontSize,
   },
   premiumStatsCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.secondary,
     marginTop: spacing.lg,
   },
   premiumStatsEmoji: {
@@ -483,12 +459,10 @@ const styles = StyleSheet.create({
   premiumStatsTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   premiumStatsDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },

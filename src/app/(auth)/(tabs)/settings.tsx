@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MODES } from '@/constants/modes';
@@ -23,6 +24,7 @@ const TRACK_ICONS: Record<ModeCode, string> = {
 };
 
 export default function SettingsScreen() {
+  const { colors } = useTheme();
   const { currentMode, setCurrentMode, setOnboardingComplete, examPracticeMode, setExamPracticeMode } = useSessionStore();
   const { session, guestMode, signOut } = useAuthStore();
   const router = useRouter();
@@ -101,9 +103,9 @@ export default function SettingsScreen() {
   const showExamModeToggle = isExamMode(currentMode);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.sectionTitle}>Track</Text>
-      <Text style={styles.sectionDescription}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Track</Text>
+      <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
         Words and situations will be tailored to your track.
         Your progress is kept when switching.
       </Text>
@@ -116,7 +118,8 @@ export default function SettingsScreen() {
               key={mode.code}
               style={[
                 styles.trackCard,
-                isSelected && styles.trackCardSelected,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
                 isLocked && styles.trackCardLocked,
               ]}
               onPress={() => handleTrackSelect(mode.code as ModeCode)}
@@ -129,25 +132,27 @@ export default function SettingsScreen() {
                   <Text
                     style={[
                       styles.trackCardText,
-                      isSelected && styles.trackCardTextSelected,
+                      { color: colors.textPrimary },
+                      isSelected && { color: colors.onPrimary },
                     ]}
                   >
                     {mode.display_name}
                   </Text>
                   {isLocked && !isSelected && (
-                    <Text style={styles.premiumBadge}>{'\u{1F512}'} Premium</Text>
+                    <Text style={[styles.premiumBadge, { color: colors.secondary }]}>{'\u{1F512}'} Premium</Text>
                   )}
                 </View>
                 {isSelected && (
-                  <View style={styles.selectedCheckmark}>
-                    <Text style={styles.selectedCheckmarkText}>{'✓'}</Text>
+                  <View style={[styles.selectedCheckmark, { backgroundColor: colors.white }]}>
+                    <Text style={[styles.selectedCheckmarkText, { color: colors.primary }]}>{'✓'}</Text>
                   </View>
                 )}
               </View>
               <Text
                 style={[
                   styles.trackCardDescription,
-                  isSelected && styles.trackCardDescriptionSelected,
+                  { color: colors.textSecondary },
+                  isSelected && { color: 'rgba(255, 255, 255, 0.8)' },
                 ]}
                 numberOfLines={2}
               >
@@ -161,8 +166,8 @@ export default function SettingsScreen() {
       {/* Exam Mode Toggle */}
       {showExamModeToggle && (
         <>
-          <Text style={styles.sectionTitle}>Practice Mode</Text>
-          <Text style={styles.sectionDescription}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Practice Mode</Text>
+          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
             When on an exam track, you can choose between structured exam practice
             (timed, with accuracy feedback) or a relaxed daily practice using the same words.
           </Text>
@@ -170,7 +175,8 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.examModeOption,
-                examPracticeMode === 'exam' && styles.examModeOptionSelected,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                examPracticeMode === 'exam' && { borderColor: colors.primary, backgroundColor: colors.primarySubtle },
               ]}
               onPress={() => setExamPracticeMode('exam')}
               accessibilityRole="button"
@@ -179,18 +185,20 @@ export default function SettingsScreen() {
               <Text style={styles.examModeOptionIcon}>{'\u{1F4DD}'}</Text>
               <Text style={[
                 styles.examModeOptionLabel,
-                examPracticeMode === 'exam' && styles.examModeOptionLabelSelected,
+                { color: colors.textPrimary },
+                examPracticeMode === 'exam' && { color: colors.primary },
               ]}>
                 Exam Practice
               </Text>
-              <Text style={styles.examModeOptionDesc}>
+              <Text style={[styles.examModeOptionDesc, { color: colors.textSecondary }]}>
                 Timed, structured, with accuracy feedback
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.examModeOption,
-                examPracticeMode === 'daily' && styles.examModeOptionSelected,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+                examPracticeMode === 'daily' && { borderColor: colors.primary, backgroundColor: colors.primarySubtle },
               ]}
               onPress={() => setExamPracticeMode('daily')}
               accessibilityRole="button"
@@ -199,11 +207,12 @@ export default function SettingsScreen() {
               <Text style={styles.examModeOptionIcon}>{'\u{1F4AC}'}</Text>
               <Text style={[
                 styles.examModeOptionLabel,
-                examPracticeMode === 'daily' && styles.examModeOptionLabelSelected,
+                { color: colors.textPrimary },
+                examPracticeMode === 'daily' && { color: colors.primary },
               ]}>
                 Daily Practice
               </Text>
-              <Text style={styles.examModeOptionDesc}>
+              <Text style={[styles.examModeOptionDesc, { color: colors.textSecondary }]}>
                 Relaxed, no timer, conversation-based
               </Text>
             </TouchableOpacity>
@@ -212,97 +221,97 @@ export default function SettingsScreen() {
       )}
 
       {/* Premium Section */}
-      <Text style={styles.sectionTitle}>Daily English Premium</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Daily English Premium</Text>
       {isPremium ? (
-        <View style={styles.premiumStatusCard}>
+        <View style={[styles.premiumStatusCard, { backgroundColor: colors.primarySubtle, borderColor: colors.primary }]}>
           <Text style={styles.premiumStatusEmoji}>{'\u{2728}'}</Text>
           <View style={styles.premiumStatusText}>
-            <Text style={styles.premiumStatusLabel}>Premium Active</Text>
-            <Text style={styles.premiumStatusDesc}>
+            <Text style={[styles.premiumStatusLabel, { color: colors.primary }]}>Premium Active</Text>
+            <Text style={[styles.premiumStatusDesc, { color: colors.textSecondary }]}>
               All tracks, full history, detailed stats, no ads
             </Text>
           </View>
           <TouchableOpacity
-            style={styles.manageButton}
+            style={[styles.manageButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => {
               Alert.alert('Manage Subscription', 'Subscription management will be available in a future update.');
             }}
             accessibilityRole="button"
             accessibilityLabel="Manage subscription"
           >
-            <Text style={styles.manageButtonText}>Manage</Text>
+            <Text style={[styles.manageButtonText, { color: colors.textPrimary }]}>Manage</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <TouchableOpacity
-          style={styles.upgradeCard}
+          style={[styles.upgradeCard, { backgroundColor: colors.surface, borderColor: colors.secondary }]}
           onPress={() => setShowUpgradeSheet(true)}
           accessibilityRole="button"
           accessibilityLabel="Upgrade to Premium"
         >
           <Text style={styles.upgradeEmoji}>{'\u{1F680}'}</Text>
           <View style={styles.upgradeText}>
-            <Text style={styles.upgradeTitle}>Free Plan</Text>
-            <Text style={styles.upgradeDesc}>
+            <Text style={[styles.upgradeTitle, { color: colors.textPrimary }]}>Free Plan</Text>
+            <Text style={[styles.upgradeDesc, { color: colors.textSecondary }]}>
               Upgrade for all tracks, full history, detailed stats, and no ads.
             </Text>
           </View>
-          <Text style={styles.upgradeArrow}>{'>'}</Text>
+          <Text style={[styles.upgradeArrow, { color: colors.textMuted }]}>{'>'}</Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.sectionTitle}>Words per day</Text>
-      <Text style={styles.settingValue}>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Words per day</Text>
+      <Text style={[styles.settingValue, { color: colors.textSecondary }]}>
         {isPremium ? 'Unlimited' : '5'}
       </Text>
       {!isPremium && (
-        <Text style={styles.settingNote}>
+        <Text style={[styles.settingNote, { color: colors.textMuted }]}>
           Premium unlocks unlimited words per day
         </Text>
       )}
 
-      <Text style={styles.sectionTitle}>Audio</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Audio</Text>
       <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>Play scene audio automatically</Text>
+        <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Play scene audio automatically</Text>
         <Switch value={autoPlayAudio} onValueChange={setAutoPlayAudio} />
       </View>
       <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>Play partner responses as audio</Text>
+        <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Play partner responses as audio</Text>
         <Switch value={playPartnerAudio} onValueChange={setPlayPartnerAudio} />
       </View>
 
-      <Text style={styles.sectionTitle}>Speaking</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Speaking</Text>
       <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>Auto-detect end of speech</Text>
+        <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Auto-detect end of speech</Text>
         <Switch value={autoDetectSpeech} onValueChange={setAutoDetectSpeech} />
       </View>
 
       {/* Demo premium toggle (hidden behind long-press) */}
       {showDemoToggle && (
         <View style={styles.toggleRow}>
-          <Text style={styles.toggleLabel}>{'\u{1F513}'} Demo: Premium Mode</Text>
+          <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>{'\u{1F513}'} Demo: Premium Mode</Text>
           <Switch value={demoPremiumEnabled} onValueChange={handleDemoToggle} />
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>Account</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Account</Text>
       {session?.user ? (
-        <View style={styles.accountCard}>
-          <Text style={styles.accountEmail}>{session.user.email}</Text>
+        <View style={[styles.accountCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.accountEmail, { color: colors.textPrimary }]}>{session.user.email}</Text>
           <TouchableOpacity
-            style={styles.signOutButton}
+            style={[styles.signOutButton, { borderColor: colors.danger }]}
             onPress={async () => {
               await signOut();
             }}
             accessibilityRole="button"
             accessibilityLabel="Sign out"
           >
-            <Text style={styles.signOutButtonText}>Sign Out</Text>
+            <Text style={[styles.signOutButtonText, { color: colors.danger }]}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <TouchableOpacity
-          style={styles.signInCard}
+          style={[styles.signInCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}
           onPress={() => {
             useAuthStore.getState().setGuestMode(false);
             router.replace('/auth/login');
@@ -312,19 +321,19 @@ export default function SettingsScreen() {
         >
           <Text style={styles.signInIcon}>{'\u{1F517}'}</Text>
           <View style={styles.signInText}>
-            <Text style={styles.signInTitle}>Sign in to sync</Text>
-            <Text style={styles.signInDesc}>Save your progress across devices</Text>
+            <Text style={[styles.signInTitle, { color: colors.primary }]}>Sign in to sync</Text>
+            <Text style={[styles.signInDesc, { color: colors.textSecondary }]}>Save your progress across devices</Text>
           </View>
-          <Text style={styles.signInArrow}>{'>'}</Text>
+          <Text style={[styles.signInArrow, { color: colors.textMuted }]}>{'>'}</Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.sectionTitle}>About</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>About</Text>
       <TouchableOpacity
         onPress={handleVersionLongPress}
         activeOpacity={0.7}
       >
-        <Text style={styles.settingValue}>Version {APP_CONFIG.version}</Text>
+        <Text style={[styles.settingValue, { color: colors.textSecondary }]}>Version {APP_CONFIG.version}</Text>
       </TouchableOpacity>
 
       {/* Premium Upgrade Sheet */}
@@ -344,7 +353,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
   },
   content: {
     paddingHorizontal: spacing.md,
@@ -353,13 +361,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: typography.subheading.fontWeight as any,
-    color: colors.light.textPrimary,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   sectionDescription: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginBottom: spacing.sm,
   },
@@ -370,13 +376,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     borderRadius: radii.md,
-    backgroundColor: colors.light.surface,
     borderWidth: 1,
-    borderColor: colors.light.border,
-  },
-  trackCardSelected: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
   },
   trackCardLocked: {
     opacity: 0.7,
@@ -396,23 +396,9 @@ const styles = StyleSheet.create({
   trackCardText: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
-  },
-  trackCardTextSelected: {
-    color: '#FFFFFF',
-  },
-  trackCardDescription: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
-    lineHeight: typography.caption.lineHeight,
-    marginTop: spacing.xs,
-  },
-  trackCardDescriptionSelected: {
-    color: 'rgba(255, 255, 255, 0.8)',
   },
   premiumBadge: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.secondary,
     marginTop: 2,
     fontWeight: '600',
   },
@@ -420,14 +406,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#FFFFFF',
     alignItems: 'center' as any,
     justifyContent: 'center' as any,
   },
   selectedCheckmarkText: {
     fontSize: 12,
     fontWeight: '700' as any,
-    color: colors.light.primary,
+  },
+  trackCardDescription: {
+    fontSize: typography.caption.fontSize,
+    lineHeight: typography.caption.lineHeight,
+    marginTop: spacing.xs,
   },
   examModeToggleContainer: {
     flexDirection: 'row' as any,
@@ -435,15 +424,9 @@ const styles = StyleSheet.create({
   },
   examModeOption: {
     flex: 1,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.border,
-  },
-  examModeOptionSelected: {
-    borderColor: colors.light.primary,
-    backgroundColor: 'rgba(91, 140, 90, 0.08)',
   },
   examModeOptionIcon: {
     fontSize: 20,
@@ -452,26 +435,19 @@ const styles = StyleSheet.create({
   examModeOptionLabel: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
-  },
-  examModeOptionLabelSelected: {
-    color: colors.light.primary,
   },
   examModeOptionDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     marginTop: spacing.xs,
     lineHeight: typography.caption.lineHeight,
   },
   premiumStatusCard: {
-    backgroundColor: 'rgba(91, 140, 90, 0.1)',
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.primary,
   },
   premiumStatusEmoji: {
     fontSize: 24,
@@ -482,37 +458,30 @@ const styles = StyleSheet.create({
   premiumStatusLabel: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
     lineHeight: typography.body.lineHeight,
   },
   premiumStatusDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   manageButton: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   manageButtonText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
   },
   upgradeCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.secondary,
   },
   upgradeEmoji: {
     fontSize: 24,
@@ -523,66 +492,53 @@ const styles = StyleSheet.create({
   upgradeTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
   upgradeDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   upgradeArrow: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '600',
   },
   settingValue: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     marginBottom: spacing.xs,
   },
   settingNote: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
     marginBottom: spacing.sm,
   },
   accountCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   accountEmail: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     marginBottom: spacing.md,
   },
   signOutButton: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderWidth: 1,
-    borderColor: '#cc3333',
     alignSelf: 'flex-start',
   },
   signOutButtonText: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: '#cc3333',
   },
   signInCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.primary,
   },
   signInIcon: {
     fontSize: 24,
@@ -593,17 +549,14 @@ const styles = StyleSheet.create({
   signInTitle: {
     fontSize: typography.body.fontSize,
     fontWeight: '600',
-    color: colors.light.primary,
   },
   signInDesc: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.caption.lineHeight,
     marginTop: 2,
   },
   signInArrow: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textMuted,
     fontWeight: '600',
   },
   toggleRow: {
@@ -615,7 +568,6 @@ const styles = StyleSheet.create({
   toggleLabel: {
     flex: 1,
     fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
     lineHeight: typography.body.lineHeight,
   },
 });

@@ -9,7 +9,8 @@
  */
 
 import { View, Text, TouchableOpacity } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { subscriptionService } from '../services/subscriptionService';
 
 interface SessionCloseAdProps {
@@ -18,28 +19,30 @@ interface SessionCloseAdProps {
 }
 
 export default function SessionCloseAd({ onContinue, onUpgrade }: SessionCloseAdProps) {
+  const { colors } = useTheme();
+
   // Premium users never see this
   if (!subscriptionService.shouldShowAds()) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.adCard}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.adCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Text style={styles.adEmoji}>{'\u{1F331}'}</Text>
-        <Text style={styles.adTitle}>Keep growing with Premium</Text>
-        <Text style={styles.adDescription}>
+        <Text style={[styles.adTitle, { color: colors.textPrimary }]}>Keep growing with Premium</Text>
+        <Text style={[styles.adDescription, { color: colors.textSecondary }]}>
           Unlock all tracks, full history, detailed stats, and an ad-free experience.
         </Text>
 
         {onUpgrade ? (
           <TouchableOpacity
-            style={styles.upgradeButton}
+            style={[styles.upgradeButton, { backgroundColor: colors.secondary }]}
             onPress={onUpgrade}
             accessibilityRole="button"
             accessibilityLabel="Learn more about Premium"
           >
-            <Text style={styles.upgradeButtonText}>Learn more</Text>
+            <Text style={[styles.upgradeButtonText, { color: colors.textPrimary }]}>Learn more</Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -50,7 +53,7 @@ export default function SessionCloseAd({ onContinue, onUpgrade }: SessionCloseAd
         accessibilityRole="button"
         accessibilityLabel="Continue to home"
       >
-        <Text style={styles.continueText}>See you tomorrow!</Text>
+        <Text style={[styles.continueText, { color: colors.primary }]}>See you tomorrow!</Text>
       </TouchableOpacity>
     </View>
   );
@@ -59,18 +62,15 @@ export default function SessionCloseAd({ onContinue, onUpgrade }: SessionCloseAd
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     paddingHorizontal: spacing.lg,
   },
   adCard: {
-    backgroundColor: colors.light.surface,
     borderRadius: radii.lg,
     padding: spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
     width: '100%',
   },
   adEmoji: {
@@ -80,20 +80,17 @@ const styles = {
   adTitle: {
     fontSize: typography.subheading.fontSize,
     fontWeight: '600',
-    color: colors.light.textPrimary,
     lineHeight: typography.subheading.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   adDescription: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.lg,
   },
   upgradeButton: {
-    backgroundColor: colors.light.secondary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -102,7 +99,6 @@ const styles = {
   upgradeButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: colors.light.textPrimary,
   },
   continueButton: {
     marginTop: spacing.xl,
@@ -112,7 +108,6 @@ const styles = {
   continueText: {
     fontSize: typography.body.fontSize,
     fontWeight: '500',
-    color: colors.light.primary,
     textAlign: 'center',
   },
 } as const;

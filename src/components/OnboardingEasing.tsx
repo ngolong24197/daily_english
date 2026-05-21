@@ -15,7 +15,8 @@
 
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { storage } from '../lib/storage';
 
 const ONBOARDING_STEP_KEY = 'onboarding_easing_step';
@@ -96,6 +97,7 @@ export function saveOnboardingStep(step: OnboardingStep): void {
 }
 
 export default function OnboardingEasing({ onComplete, onStep3Select, onStep4MicPress }: OnboardingEasingProps) {
+  const { colors } = useTheme();
   const [step, setStep] = useState<OnboardingStep>(() => {
     const saved = storage.getNumber(ONBOARDING_STEP_KEY);
     const valid = saved && saved >= 1 && saved <= 5 ? saved : 1;
@@ -143,13 +145,13 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
     return (
       <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
         <View style={styles.emojiSection}>
-          <Text style={styles.stepTitle}>{currentStep.title}</Text>
-          <Text style={styles.stepMessage}>{currentStep.message}</Text>
+          <Text style={[styles.stepTitle, { color: colors.textPrimary }]}>{currentStep.title}</Text>
+          <Text style={[styles.stepMessage, { color: colors.textSecondary }]}>{currentStep.message}</Text>
           <View style={styles.emojiRow}>
             {MOODS.map((mood) => (
               <TouchableOpacity
                 key={mood.key}
-                style={styles.emojiButton}
+                style={[styles.emojiButton, { backgroundColor: colors.surface, borderColor: colors.primary }]}
                 onPress={() => {
                   onStep3Select(mood.key);
                   advance(4);
@@ -158,11 +160,11 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
                 accessibilityRole="button"
               >
                 <Text style={styles.emojiText}>{mood.emoji}</Text>
-                <Text style={styles.emojiLabel}>{mood.label}</Text>
+                <Text style={[styles.emojiLabel, { color: colors.textSecondary }]}>{mood.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
-          <Text style={styles.tapHint}>Tap any emoji above</Text>
+          <Text style={[styles.tapHint, { color: colors.textMuted }]}>Tap any emoji above</Text>
         </View>
       </Animated.View>
     );
@@ -173,10 +175,10 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
     return (
       <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
         <View style={styles.micSection}>
-          <Text style={styles.stepTitle}>{currentStep.title}</Text>
-          <Text style={styles.stepMessage}>{currentStep.message}</Text>
+          <Text style={[styles.stepTitle, { color: colors.textPrimary }]}>{currentStep.title}</Text>
+          <Text style={[styles.stepMessage, { color: colors.textSecondary }]}>{currentStep.message}</Text>
           <TouchableOpacity
-            style={styles.micHighlightButton}
+            style={[styles.micHighlightButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]}
             onPress={() => {
               onStep4MicPress();
               advance(5);
@@ -184,8 +186,8 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
             accessibilityLabel="Tap to start speaking"
             accessibilityRole="button"
           >
-            <Text style={styles.micHighlightIcon}>{'\u{1F3A4}'}</Text>
-            <Text style={styles.micHighlightLabel}>Tap to speak</Text>
+            <Text style={[styles.micHighlightIcon, { color: colors.onPrimary }]}>{'\u{1F3A4}'}</Text>
+            <Text style={[styles.micHighlightLabel, { color: colors.onPrimary }]}>Tap to speak</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.skipMicButton}
@@ -193,7 +195,7 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
             accessibilityLabel="Skip speaking for now"
             accessibilityRole="button"
           >
-            <Text style={styles.skipMicText}>I'll type instead</Text>
+            <Text style={[styles.skipMicText, { color: colors.textMuted }]}>I'll type instead</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -202,16 +204,16 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
 
   // Steps 1, 2, 5: Info screens with action button
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+    <Animated.View style={[styles.container, { backgroundColor: colors.bg, opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <View style={styles.infoSection}>
         <Text style={styles.stepEmoji}>
           {step === 1 ? '\u{1F44B}' : step === 2 ? '\u{1F4DD}' : '\u{2705}'}
         </Text>
-        <Text style={styles.stepTitle}>{currentStep.title}</Text>
-        <Text style={styles.stepMessage}>{currentStep.message}</Text>
+        <Text style={[styles.stepTitle, { color: colors.textPrimary }]}>{currentStep.title}</Text>
+        <Text style={[styles.stepMessage, { color: colors.textSecondary }]}>{currentStep.message}</Text>
         {currentStep.action && (
           <TouchableOpacity
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: colors.primary }]}
             onPress={() => {
               const nextStep = (step + 1) as OnboardingStep;
               advance(nextStep);
@@ -219,24 +221,24 @@ export default function OnboardingEasing({ onComplete, onStep3Select, onStep4Mic
             accessibilityLabel={currentStep.action}
             accessibilityRole="button"
           >
-            <Text style={styles.actionButtonText}>{currentStep.action}</Text>
+            <Text style={[styles.actionButtonText, { color: colors.onPrimary }]}>{currentStep.action}</Text>
           </TouchableOpacity>
         )}
         {step === 2 && (
-          <View style={styles.textOptionPreview}>
-            <Text style={styles.textOptionIcon}>{'\u{2328}'}</Text>
-            <Text style={styles.textOptionLabel}>Type your response</Text>
+          <View style={[styles.textOptionPreview, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.textOptionIcon, { color: colors.textMuted }]}>{'\u{2328}'}</Text>
+            <Text style={[styles.textOptionLabel, { color: colors.textMuted }]}>Type your response</Text>
           </View>
         )}
       </View>
       {step === 5 && (
         <TouchableOpacity
-          style={styles.completeButton}
+          style={[styles.completeButton, { backgroundColor: colors.primary }]}
           onPress={handleComplete}
           accessibilityLabel="Start learning"
           accessibilityRole="button"
         >
-          <Text style={styles.completeButtonText}>Start learning</Text>
+          <Text style={[styles.completeButtonText, { color: colors.onPrimary }]}>Start learning</Text>
         </TouchableOpacity>
       )}
     </Animated.View>
@@ -253,7 +255,6 @@ const MOODS = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.bg,
     paddingHorizontal: spacing.lg,
     justifyContent: 'center',
     alignItems: 'center',
@@ -269,20 +270,17 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight,
-    color: colors.light.textPrimary,
     lineHeight: typography.heading.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   stepMessage: {
     fontSize: typography.bodyLg.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.bodyLg.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.xl,
   },
   actionButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -292,27 +290,22 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
   textOptionPreview: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     marginTop: spacing.lg,
-    backgroundColor: colors.light.surface,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.light.border,
   },
   textOptionIcon: {
     fontSize: 18,
-    color: colors.light.textMuted,
   },
   textOptionLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
   },
   emojiSection: {
     alignItems: 'center',
@@ -328,11 +321,9 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: radii.full,
-    backgroundColor: colors.light.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: colors.light.primary,
   },
   emojiText: {
     fontSize: 28,
@@ -340,12 +331,10 @@ const styles = StyleSheet.create({
   },
   emojiLabel: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
     fontWeight: '500',
   },
   tapHint: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     fontStyle: 'italic',
   },
   micSection: {
@@ -356,11 +345,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: radii.full,
-    backgroundColor: colors.light.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -368,12 +355,10 @@ const styles = StyleSheet.create({
   },
   micHighlightIcon: {
     fontSize: 32,
-    color: '#FFFFFF',
   },
   micHighlightLabel: {
     fontSize: typography.caption.fontSize,
     fontWeight: '500',
-    color: '#FFFFFF',
     marginTop: spacing.xs,
   },
   skipMicButton: {
@@ -382,11 +367,9 @@ const styles = StyleSheet.create({
   },
   skipMicText: {
     fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
     textDecorationLine: 'underline',
   },
   completeButton: {
-    backgroundColor: colors.light.primary,
     borderRadius: radii.sm,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
@@ -397,6 +380,5 @@ const styles = StyleSheet.create({
   completeButtonText: {
     fontSize: typography.button.fontSize,
     fontWeight: typography.button.fontWeight,
-    color: '#FFFFFF',
   },
 });

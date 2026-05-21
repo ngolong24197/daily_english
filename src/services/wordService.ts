@@ -6,6 +6,7 @@
  */
 
 import type { ModeCode, WordModeEntry } from '../types';
+import { modeColors } from '@/constants/theme';
 import { type MockWord } from './mockData';
 import { getWords, getWordById as supabaseGetWordById, getWordsForMode as supabaseGetWordsForMode } from './supabaseDataService';
 
@@ -77,14 +78,8 @@ export function getModeBadgeLabel(mode: ModeCode): string {
  * Get the mode badge color for a given mode code.
  */
 export function getModeBadgeColor(mode: ModeCode): { bg: string; text: string } {
-  const colors: Record<ModeCode, { bg: string; text: string }> = {
-    survival: { bg: 'rgba(91, 140, 90, 0.15)', text: '#5B8C5A' },
-    professional: { bg: 'rgba(126, 181, 214, 0.15)', text: '#4A7A9B' },
-    social: { bg: 'rgba(232, 168, 124, 0.15)', text: '#C47A3A' },
-    ielts: { bg: 'rgba(106, 160, 192, 0.15)', text: '#3A6A8F' },
-    toeic: { bg: 'rgba(196, 149, 100, 0.15)', text: '#8B6B3D' },
-  };
-  return colors[mode] ?? { bg: 'rgba(91, 140, 90, 0.15)', text: '#5B8C5A' };
+  const modeColor = modeColors[mode] ?? modeColors.survival;
+  return { bg: modeColor.accentSurface, text: modeColor.accent };
 }
 
 /**

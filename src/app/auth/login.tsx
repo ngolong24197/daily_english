@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
-import { colors, typography, spacing, radii } from '@/constants/theme';
+import { typography, spacing, radii } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type AuthMode = 'signIn' | 'signUp';
 type AuthMethod = 'password' | 'magicLink';
@@ -27,6 +28,165 @@ export default function LoginScreen() {
   const [message, setMessage] = useState<string | null>(null);
 
   const { setGuestMode } = useAuthStore();
+  const { colors } = useTheme();
+
+  const s = useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    inner: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing['3xl'],
+      paddingBottom: spacing.xl,
+    },
+    title: {
+      fontSize: typography.display.fontSize,
+      fontWeight: '700',
+      color: colors.primary,
+      textAlign: 'center',
+      marginBottom: spacing.xs,
+    },
+    subtitle: {
+      fontSize: typography.body.fontSize,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: spacing.xl,
+    },
+    tabRow: {
+      flexDirection: 'row' as const,
+      marginBottom: spacing.md,
+      backgroundColor: colors.surface,
+      borderRadius: radii.md,
+      padding: spacing.xs,
+    },
+    tab: {
+      flex: 1,
+      paddingVertical: spacing.sm,
+      alignItems: 'center' as const,
+      borderRadius: radii.sm,
+    },
+    tabActive: {
+      backgroundColor: colors.primary,
+    },
+    tabText: {
+      fontSize: typography.body.fontSize,
+      fontWeight: '500',
+      color: colors.textSecondary,
+    },
+    tabTextActive: {
+      color: colors.onPrimary,
+    },
+    methodRow: {
+      flexDirection: 'row' as const,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      gap: spacing.sm,
+      marginBottom: spacing.lg,
+    },
+    methodText: {
+      fontSize: typography.caption.fontSize,
+      color: colors.textMuted,
+    },
+    methodTextActive: {
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    methodDivider: {
+      fontSize: typography.caption.fontSize,
+      color: colors.textMuted,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderRadius: radii.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      fontSize: typography.body.fontSize,
+      color: colors.textPrimary,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginBottom: spacing.md,
+    },
+    submitButton: {
+      backgroundColor: colors.primary,
+      borderRadius: radii.md,
+      paddingVertical: spacing.md,
+      alignItems: 'center' as const,
+      marginBottom: spacing.md,
+    },
+    submitButtonDisabled: {
+      opacity: 0.6,
+    },
+    submitButtonText: {
+      fontSize: typography.button.fontSize,
+      fontWeight: '600',
+      color: colors.onPrimary,
+    },
+    messageText: {
+      fontSize: typography.caption.fontSize,
+      color: colors.primary,
+      textAlign: 'center',
+      marginBottom: spacing.md,
+    },
+    dividerRow: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      marginVertical: spacing.lg,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerText: {
+      fontSize: typography.caption.fontSize,
+      color: colors.textMuted,
+      paddingHorizontal: spacing.md,
+    },
+    oauthRow: {
+      flexDirection: 'row' as const,
+      gap: spacing.md,
+      marginBottom: spacing.lg,
+    },
+    oauthButton: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: radii.md,
+      paddingVertical: spacing.md,
+      alignItems: 'center' as const,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    oauthButtonText: {
+      fontSize: typography.body.fontSize,
+      fontWeight: '500',
+      color: colors.textPrimary,
+    },
+    switchRow: {
+      alignItems: 'center' as const,
+      marginBottom: spacing.md,
+    },
+    switchText: {
+      fontSize: typography.caption.fontSize,
+      color: colors.textSecondary,
+    },
+    switchAction: {
+      fontWeight: '600',
+      color: colors.primary,
+    },
+    guestRow: {
+      alignItems: 'center' as const,
+      paddingVertical: spacing.md,
+    },
+    guestText: {
+      fontSize: typography.body.fontSize,
+      color: colors.textMuted,
+      textDecorationLine: 'underline' as const,
+    },
+  }), [colors]);
 
   const handleEmailPassword = async () => {
     if (!email.trim()) {
@@ -159,7 +319,7 @@ export default function LoginScreen() {
           <TextInput
             style={s.input}
             placeholder="Email"
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -173,7 +333,7 @@ export default function LoginScreen() {
             <TextInput
               style={s.input}
               placeholder="Password"
-              placeholderTextColor={colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -258,161 +418,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
-const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.light.bg,
-  },
-  inner: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing['3xl'],
-    paddingBottom: spacing.xl,
-  },
-  title: {
-    fontSize: typography.display.fontSize,
-    fontWeight: '700',
-    color: colors.light.primary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  tabRow: {
-    flexDirection: 'row',
-    marginBottom: spacing.md,
-    backgroundColor: colors.light.surface,
-    borderRadius: radii.md,
-    padding: spacing.xs,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-    borderRadius: radii.sm,
-  },
-  tabActive: {
-    backgroundColor: colors.light.primary,
-  },
-  tabText: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '500',
-    color: colors.light.textSecondary,
-  },
-  tabTextActive: {
-    color: '#FFFFFF',
-  },
-  methodRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  methodText: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
-  },
-  methodTextActive: {
-    color: colors.light.primary,
-    fontWeight: '600',
-  },
-  methodDivider: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
-  },
-  input: {
-    backgroundColor: colors.light.surface,
-    borderRadius: radii.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    fontSize: typography.body.fontSize,
-    color: colors.light.textPrimary,
-    borderWidth: 1,
-    borderColor: colors.light.border,
-    marginBottom: spacing.md,
-  },
-  submitButton: {
-    backgroundColor: colors.light.primary,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    fontSize: typography.button.fontSize,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  messageText: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.primary,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.light.border,
-  },
-  dividerText: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.textMuted,
-    paddingHorizontal: spacing.md,
-  },
-  oauthRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  oauthButton: {
-    flex: 1,
-    backgroundColor: colors.light.surface,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.light.border,
-  },
-  oauthButtonText: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '500',
-    color: colors.light.textPrimary,
-  },
-  switchRow: {
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  switchText: {
-    fontSize: typography.caption.fontSize,
-    color: colors.light.textSecondary,
-  },
-  switchAction: {
-    fontWeight: '600',
-    color: colors.light.primary,
-  },
-  guestRow: {
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  guestText: {
-    fontSize: typography.body.fontSize,
-    color: colors.light.textMuted,
-    textDecorationLine: 'underline',
-  },
-});

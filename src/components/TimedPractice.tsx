@@ -12,7 +12,8 @@
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
+import { typography, spacing, radii, modeColors } from '../constants/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 type TimerPhase = 'prep' | 'speak' | 'complete';
 
@@ -46,8 +47,9 @@ export default function TimedPractice({
   onTimerComplete,
   onPrepComplete,
   onTick,
-  accentColor = '#3A6A8F',
+  accentColor = modeColors.ielts.accent,
 }: TimedPracticeProps) {
+  const { colors } = useTheme();
   const [phase, setPhase] = useState<TimerPhase>(
     prepTimeSeconds > 0 ? initialPhase : 'speak'
   );
@@ -122,8 +124,8 @@ export default function TimedPractice({
 
   const getTimerColor = (): string => {
     if (phase === 'complete') return accentColor;
-    if (remainingSeconds <= 10) return '#D44'; // Red
-    if (remainingSeconds <= 30) return '#C49564'; // Amber
+    if (remainingSeconds <= 10) return colors.danger; // Red
+    if (remainingSeconds <= 30) return colors.secondary; // Amber
     return accentColor;
   };
 
@@ -162,7 +164,7 @@ export default function TimedPractice({
 
         {/* Progress bar */}
         {phase !== 'complete' && (
-          <View style={styles.progressTrack}>
+          <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
             <View
               style={[
                 styles.progressFill,
@@ -177,7 +179,7 @@ export default function TimedPractice({
       </View>
 
       {/* Phase description */}
-      <Text style={styles.phaseDescription}>
+      <Text style={[styles.phaseDescription, { color: colors.textSecondary }]}>
         {getPhaseDescription()}
       </Text>
 
@@ -185,7 +187,7 @@ export default function TimedPractice({
       {phase === 'speak' && (
         <View style={styles.recordingIndicator}>
           <View style={[styles.recordingDot, { backgroundColor: getTimerColor() }]} />
-          <Text style={styles.recordingText}>Recording</Text>
+          <Text style={[styles.recordingText, { color: colors.textSecondary }]}>Recording</Text>
         </View>
       )}
 
@@ -233,7 +235,6 @@ const styles = StyleSheet.create({
   progressTrack: {
     width: '80%',
     height: 4,
-    backgroundColor: colors.light.border,
     borderRadius: 2,
     marginTop: spacing.sm,
     overflow: 'hidden',
@@ -244,7 +245,6 @@ const styles = StyleSheet.create({
   },
   phaseDescription: {
     fontSize: typography.body.fontSize,
-    color: colors.light.textSecondary,
     lineHeight: typography.body.lineHeight,
     textAlign: 'center',
     marginBottom: spacing.md,
@@ -264,7 +264,6 @@ const styles = StyleSheet.create({
   recordingText: {
     fontSize: typography.caption.fontSize,
     fontWeight: '500',
-    color: colors.light.textSecondary,
   },
   pauseButton: {
     borderWidth: 1,

@@ -9,6 +9,7 @@
  */
 
 import { AccessibilityInfo, Platform, Alert } from 'react-native';
+import { colors } from '@/constants/theme';
 
 /**
  * Check if reduce motion is enabled on the device.
@@ -167,29 +168,26 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
  * Run this in development to check color combinations.
  */
 export function verifyThemeContrast(): { pass: boolean; violations: string[] } {
-  const { textPrimary, textSecondary, textMuted, primary, surface, bg } = {
-    textPrimary: '#2D2A26',
-    textSecondary: '#7A746D',
-    textMuted: '#B5AFA8',
-    primary: '#5B8C5A',
-    surface: '#FFFFFF',
-    bg: '#FFFBF5',
-  };
-
   const violations: string[] = [];
 
-  // Normal text on background
-  if (!meetsWcagAA(textPrimary, bg)) {
-    violations.push(`textPrimary on bg: ${contrastRatio(textPrimary, bg).toFixed(2)} (need 4.5:1)`);
-  }
-  if (!meetsWcagAA(textSecondary, bg)) {
-    violations.push(`textSecondary on bg: ${contrastRatio(textSecondary, bg).toFixed(2)} (need 4.5:1)`);
-  }
-  if (!meetsWcagAA(textMuted, bg)) {
-    violations.push(`textMuted on bg: ${contrastRatio(textMuted, bg).toFixed(2)} (need 4.5:1) — large text only`);
-  }
-  if (!meetsWcagAA('#FFFFFF', primary)) {
-    violations.push(`white on primary: ${contrastRatio('#FFFFFF', primary).toFixed(2)} (need 4.5:1)`);
+  // Check both light and dark palettes
+  for (const scheme of ['light', 'dark'] as const) {
+    const palette = colors[scheme];
+    const label = scheme === 'light' ? 'Light' : 'Dark';
+
+    // Normal text on background
+    if (!meetsWcagAA(palette.textPrimary, palette.bg)) {
+      violations.push(`[${label}] textPrimary on bg: ${contrastRatio(palette.textPrimary, palette.bg).toFixed(2)} (need 4.5:1)`);
+    }
+    if (!meetsWcagAA(palette.textSecondary, palette.bg)) {
+      violations.push(`[${label}] textSecondary on bg: ${contrastRatio(palette.textSecondary, palette.bg).toFixed(2)} (need 4.5:1)`);
+    }
+    if (!meetsWcagAA(palette.textMuted, palette.bg)) {
+      violations.push(`[${label}] textMuted on bg: ${contrastRatio(palette.textMuted, palette.bg).toFixed(2)} (need 4.5:1) — large text only`);
+    }
+    if (!meetsWcagAA(palette.onPrimary, palette.primary)) {
+      violations.push(`[${label}] onPrimary on primary: ${contrastRatio(palette.onPrimary, palette.primary).toFixed(2)} (need 4.5:1)`);
+    }
   }
 
   return {

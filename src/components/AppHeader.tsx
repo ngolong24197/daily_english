@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { colors, typography, spacing } from '@/constants/theme';
+import { typography, spacing } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useDrawer } from '@/contexts/DrawerContext';
 
 interface AppHeaderProps {
@@ -16,10 +17,11 @@ export default function AppHeader({
   showDrawerButton = true,
   rightAction,
 }: AppHeaderProps) {
+  const { colors } = useTheme();
   const { open } = useDrawer();
 
   return (
-    <View style={s.header}>
+    <View style={[s.header, { backgroundColor: colors.bg, borderBottomColor: colors.border }]}>
       <View style={s.left}>
         {showBackButton && (
           <TouchableOpacity
@@ -28,7 +30,7 @@ export default function AppHeader({
             accessibilityRole="button"
             accessibilityLabel="Go back"
           >
-            <Text style={s.iconText}>{'<'} </Text>
+            <Text style={[s.iconText, { color: colors.textPrimary }]}>{'<'} </Text>
           </TouchableOpacity>
         )}
         {showDrawerButton && !showBackButton && (
@@ -38,12 +40,12 @@ export default function AppHeader({
             accessibilityRole="button"
             accessibilityLabel="Open menu"
           >
-            <Text style={s.iconText}>{'≡'}</Text>
+            <Text style={[s.iconText, { color: colors.textPrimary }]}>{'≡'}</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      <Text style={s.title} numberOfLines={1}>{title}</Text>
+      <Text style={[s.title, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text>
 
       <View style={s.right}>
         {rightAction ?? null}
@@ -58,9 +60,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     height: 56,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.light.bg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.light.border,
   },
   left: {
     width: 44,
@@ -70,7 +70,6 @@ const s = StyleSheet.create({
     flex: 1,
     fontSize: typography.heading.fontSize,
     fontWeight: typography.heading.fontWeight as any,
-    color: colors.light.textPrimary,
     textAlign: 'center',
   },
   right: {
@@ -85,7 +84,6 @@ const s = StyleSheet.create({
   },
   iconText: {
     fontSize: 22,
-    color: colors.light.textPrimary,
     fontWeight: '600',
   },
 });
