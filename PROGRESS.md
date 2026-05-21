@@ -50,3 +50,24 @@ Flow for each story: **spec → plan → implement → test → review → commi
 - expo-speech-recognition SDK 54 API: `ExpoSpeechRecognitionModule` (value), `ExpoSpeechRecognitionOptions`/`ExpoSpeechRecognitionErrorEvent`/`ExpoSpeechRecognitionResultEvent` (type-only)
 - react-native-mmkv v4: `createMMKV({id})` function, `MMKV` is type-only, `.remove()` replaces `.delete()`
 - Plain style objects need `as const` for string literal narrowing; `StyleSheet.create()` results do not
+---
+
+## 2026-05-22
+
+### Story 1.2: Supabase Backend Setup — Implementation Complete
+
+**4 tasks completed:**
+1. Migration 002 — `supabase/migrations/002_fix_id_types.sql`: UUID→TEXT for all ID columns, added `words.is_new` and `scenes.dialogue_text`
+2. Seed SQL — `supabase/seed.sql`: 34 words, 79 word_mode_entries, 14 scenes, 14 conversation_scripts (JSONB). All idempotent (`ON CONFLICT DO NOTHING`)
+3. Data service — `src/services/supabaseDataService.ts`: Adapter+cache pattern. Preloads from Supabase, transforms rows to MockWord/MockScene/ConversationStep[], falls back silently to mockData
+4. App wiring — Routed 5 consumers through supabaseDataService: `index.tsx`, `wordService.ts`, `conversationEngine.ts`, `situationalRepetition.ts`, `words.tsx`, `warmReEntry.ts`
+
+**Architecture:** Adapter pattern — schema matches canonical TypeScript types; service transforms Supabase rows into MockWord/MockScene shapes the app expects. Preload+cache: fetch on app start, serve synchronously from cache, silent fallback to mockData on any error.
+
+**Verification:** `npx tsc --noEmit` 0 errors, `npx jest` 24 tests pass
+
+### Remaining for Story 1.2
+- [ ] Apply migrations 001+002 to Supabase project
+- [ ] Run seed SQL against Supabase project
+- [ ] Integration test: connected + disconnected paths
+- [ ] Commit to GitHub

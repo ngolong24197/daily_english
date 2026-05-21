@@ -15,6 +15,7 @@ import {
   type MockScene,
 } from './mockData';
 import type { ModeCode } from '../types';
+import { getConversationScript } from './supabaseDataService';
 
 export interface ConversationMessage {
   id: string;
@@ -61,6 +62,10 @@ function findMatchingBranch(
  * Falls back to mode-specific scripts if no scene-specific script exists.
  */
 function getConversationScriptForScene(sceneId: string, mode: ModeCode): ConversationStep[] {
+  // Try Supabase cache first
+  const cached = getConversationScript(sceneId);
+  if (cached) return cached;
+
   // Scene-specific conversations for Sprint 6 expansion scenes
   const sceneConversationMap: Record<string, ConversationStep[]> = {
     'scene-email-followup-professional': EMAIL_FOLLOWUP_CONVERSATION,

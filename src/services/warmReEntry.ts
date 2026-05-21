@@ -9,7 +9,7 @@
 
 import { storage } from '../lib/storage';
 import { wordProgressStore } from './wordProgress';
-import { WORDS } from './mockData';
+import { getWordById } from './supabaseDataService';
 import type { ModeCode } from '../types';
 
 const LAST_SESSION_DATE_KEY = 'warm_reentry_last_date';
@@ -76,7 +76,7 @@ export function getRecoveryWords(currentMode: ModeCode): string[] {
 
   for (const record of candidates) {
     if (recoveryWordIds.length >= 5) break;
-    const word = WORDS[record.wordId];
+    const word = getWordById(record.wordId);
     if (word && (record.contexts.includes(currentMode) || Object.keys(word.modeEntries).includes(currentMode))) {
       recoveryWordIds.push(record.wordId);
     }

@@ -6,7 +6,8 @@
  */
 
 import type { ModeCode, WordModeEntry } from '../types';
-import { WORDS, type MockWord } from './mockData';
+import { type MockWord } from './mockData';
+import { getWords, getWordById as supabaseGetWordById, getWordsForMode as supabaseGetWordsForMode } from './supabaseDataService';
 
 /**
  * Get the mode-specific entry for a word.
@@ -31,21 +32,21 @@ export function getWordModeEntry(word: MockWord, mode: ModeCode): WordModeEntry 
  * Get all words available for a given mode.
  */
 export function getWordsForMode(mode: ModeCode): MockWord[] {
-  return Object.values(WORDS).filter((word) => mode in word.modeEntries);
+  return supabaseGetWordsForMode(mode);
 }
 
 /**
  * Get a word by its ID.
  */
 export function getWordById(wordId: string): MockWord | undefined {
-  return WORDS[wordId];
+  return supabaseGetWordById(wordId);
 }
 
 /**
  * Get a word by its lemma (base form).
  */
 export function getWordByLemma(lemma: string): MockWord | undefined {
-  return Object.values(WORDS).find((w) => w.lemma === lemma);
+  return Object.values(getWords()).find((w) => w.lemma === lemma);
 }
 
 /**

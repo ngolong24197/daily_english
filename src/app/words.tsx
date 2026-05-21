@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { colors, typography, spacing, radii } from '../constants/theme';
 import { useSessionStore } from '../stores/sessionStore';
 import { wordProgressStore, type MasteryLevel } from '../services/wordProgress';
-import { WORDS, type MockWord } from '../services/mockData';
+import { type MockWord } from '../services/mockData';
+import { getWords } from '../services/supabaseDataService';
 import { getWordModeEntry, getModeBadgeColor, getModeBadgeLabel } from '../services/wordService';
 import { subscriptionService } from '../services/subscriptionService';
 import WordExplorationSheet from '../components/WordExplorationSheet';
@@ -83,7 +84,7 @@ export default function WordsScreen() {
   const allProgress = wordProgressStore.getAll();
   for (const record of allProgress) {
     if (!wordMap.has(record.wordId)) {
-      const mockWord = WORDS[record.wordId];
+      const mockWord = getWords()[record.wordId];
       wordMap.set(record.wordId, {
         lemma: mockWord?.lemma ?? record.wordId,
         count: record.timesSeen,
@@ -100,7 +101,7 @@ export default function WordsScreen() {
   };
 
   for (const record of allProgress) {
-    const word = WORDS[record.wordId];
+    const word = getWords()[record.wordId];
     if (!word) continue;
 
     // Apply mode filter

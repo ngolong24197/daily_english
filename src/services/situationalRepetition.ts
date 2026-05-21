@@ -13,7 +13,8 @@
  */
 
 import type { ModeCode } from '../types';
-import { WORDS, type MockWord } from './mockData';
+import { type MockWord } from './mockData';
+import { getWordById } from './supabaseDataService';
 import { getWordModeEntry } from './wordService';
 import {
   wordProgressStore,
@@ -52,7 +53,7 @@ export function selectReviewWords(
     if (record.masteryLevel === 'bloom') continue;
 
     // Find the word in our mock data
-    const word = WORDS[record.wordId];
+    const word = getWordById(record.wordId);
     if (!word) continue;
 
     // Check if the word has a mode entry for the current mode

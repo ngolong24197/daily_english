@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform
 import { useState, useCallback, useEffect } from 'react';
 import { colors, typography, spacing, radii } from '../constants/theme';
 import { useSessionStore } from '../stores/sessionStore';
-import { getSceneForMoodAndMode } from '../services/mockData';
+import { getSceneForMoodAndMode } from '../services/supabaseDataService';
+import { preloadData } from '../services/supabaseDataService';
 import { getAsrErrorMessage } from '../services/asrService';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useEntranceAnimation } from '../hooks/useEntranceAnimation';
@@ -68,6 +69,7 @@ function CheckInScreen() {
 
   // Initialize demo word progress, record streak, and check warm re-entry on first load
   useEffect(() => {
+    preloadData();
     initializeDemoProgress(currentMode);
     streakService.recordSession();
     recordSessionDate();
