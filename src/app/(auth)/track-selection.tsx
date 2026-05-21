@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { colors, typography, spacing, radii } from '../constants/theme';
-import type { ModeCode } from '../types';
-import { MODES } from '../constants/modes';
-import { useSessionStore } from '../stores/sessionStore';
-import { storage } from '../lib/storage';
+import { colors, typography, spacing, radii } from '@/constants/theme';
+import type { ModeCode } from '@/types';
+import { MODES } from '@/constants/modes';
+import { useSessionStore } from '@/stores/sessionStore';
+import { storage } from '@/lib/storage';
 
 const ONBOARDING_COMPLETE_KEY = 'onboarding_complete';
 

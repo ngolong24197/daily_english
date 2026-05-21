@@ -1,16 +1,18 @@
 import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { useState, useRef } from 'react';
-import { colors, typography, spacing, radii } from '../constants/theme';
-import { useSessionStore } from '../stores/sessionStore';
-import { MODES } from '../constants/modes';
-import type { ModeCode } from '../types';
-import { getModeSwitchMessage, isExamMode } from '../services/contextDetection';
-import { subscriptionService } from '../services/subscriptionService';
-import PremiumUpgradeSheet from '../components/PremiumUpgradeSheet';
-import { useHaptics } from '../hooks/useHaptics';
-import { trackLabel } from '../utils/accessibility';
-import { APP_CONFIG } from '../constants/appConfig';
-import type { ExamPracticeMode } from '../stores/sessionStore';
+import { useRouter } from 'expo-router';
+import { colors, typography, spacing, radii } from '@/constants/theme';
+import { useSessionStore } from '@/stores/sessionStore';
+import { useAuthStore } from '@/stores/authStore';
+import { MODES } from '@/constants/modes';
+import type { ModeCode } from '@/types';
+import { getModeSwitchMessage, isExamMode } from '@/services/contextDetection';
+import { subscriptionService } from '@/services/subscriptionService';
+import PremiumUpgradeSheet from '@/components/PremiumUpgradeSheet';
+import { useHaptics } from '@/hooks/useHaptics';
+import { trackLabel } from '@/utils/accessibility';
+import { APP_CONFIG } from '@/constants/appConfig';
+import type { ExamPracticeMode } from '@/stores/sessionStore';
 
 const TRACK_ICONS: Record<ModeCode, string> = {
   survival: '\u{1F3E0}',
@@ -22,6 +24,8 @@ const TRACK_ICONS: Record<ModeCode, string> = {
 
 export default function SettingsScreen() {
   const { currentMode, setCurrentMode, setOnboardingComplete, examPracticeMode, setExamPracticeMode } = useSessionStore();
+  const { session, guestMode, signOut } = useAuthStore();
+  const router = useRouter();
   const [autoPlayAudio, setAutoPlayAudio] = useState(true);
   const [playPartnerAudio, setPlayPartnerAudio] = useState(true);
   const [autoDetectSpeech, setAutoDetectSpeech] = useState(true);
@@ -281,6 +285,40 @@ export default function SettingsScreen() {
         </View>
       )}
 
+      <Text style={styles.sectionTitle}>Account</Text>
+      {session?.user ? (
+        <View style={styles.accountCard}>
+          <Text style={styles.accountEmail}>{session.user.email}</Text>
+          <TouchableOpacity
+            style={styles.signOutButton}
+            onPress={async () => {
+              await signOut();
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Sign out"
+          >
+            <Text style={styles.signOutButtonText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.signInCard}
+          onPress={() => {
+            useAuthStore.getState().setGuestMode(false);
+            router.replace('/auth/login');
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Sign in to sync your progress"
+        >
+          <Text style={styles.signInIcon}>{'\u{1F517}'}</Text>
+          <View style={styles.signInText}>
+            <Text style={styles.signInTitle}>Sign in to sync</Text>
+            <Text style={styles.signInDesc}>Save your progress across devices</Text>
+          </View>
+          <Text style={styles.signInArrow}>{'>'}</Text>
+        </TouchableOpacity>
+      )}
+
       <Text style={styles.sectionTitle}>About</Text>
       <TouchableOpacity
         onPress={handleVersionLongPress}
@@ -509,6 +547,64 @@ const styles = StyleSheet.create({
     color: colors.light.textMuted,
     lineHeight: typography.caption.lineHeight,
     marginBottom: spacing.sm,
+  },
+  accountCard: {
+    backgroundColor: colors.light.surface,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.light.border,
+  },
+  accountEmail: {
+    fontSize: typography.body.fontSize,
+    color: colors.light.textPrimary,
+    marginBottom: spacing.md,
+  },
+  signOutButton: {
+    backgroundColor: colors.light.surface,
+    borderRadius: radii.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: '#cc3333',
+    alignSelf: 'flex-start',
+  },
+  signOutButtonText: {
+    fontSize: typography.body.fontSize,
+    fontWeight: '600',
+    color: '#cc3333',
+  },
+  signInCard: {
+    backgroundColor: colors.light.surface,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.light.primary,
+  },
+  signInIcon: {
+    fontSize: 24,
+  },
+  signInText: {
+    flex: 1,
+  },
+  signInTitle: {
+    fontSize: typography.body.fontSize,
+    fontWeight: '600',
+    color: colors.light.primary,
+  },
+  signInDesc: {
+    fontSize: typography.caption.fontSize,
+    color: colors.light.textSecondary,
+    lineHeight: typography.caption.lineHeight,
+    marginTop: 2,
+  },
+  signInArrow: {
+    fontSize: typography.body.fontSize,
+    color: colors.light.textMuted,
+    fontWeight: '600',
   },
   toggleRow: {
     flexDirection: 'row' as any,
